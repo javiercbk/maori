@@ -1,0 +1,7 @@
+Special thanks in advance to...
+
+Juan Carlos Rosman for encouraging me to make this application and for his unique feedback.
+
+Andrew Mason for making Tiny Doodle (http://tinydoodle.appspot.com/) open sourced making my investigation on canvas a lot easier.
+
+

@@ -25,7 +25,8 @@ var MAORI = MAORI || {};
 * event module 
 * custom event init
 */
-MAORI.event = {objectDropped: 'objectDropped',
+MAORI.event = {fileDropped: 'fileDropped',
+               textDropped: 'textDropped',
 	       clicked: 'clicked',
 	       paint: 'paint',
 	       repaint: 'repaint',
@@ -129,9 +130,21 @@ MAORI.event.fireEvent = function (name, target, properties) {
 */
 MAORI.event.objectDropped = function(event){
   MAORI.event.cancelDefaultOperation(event);
-  var fileName = MAORI.event.uploadFile(event);
-  var properties = {point:MAORI.event.getEventXY(event), file: fileName};
-  MAORI.event.fireEvent(MAORI.event.objectDropped, document, properties);
+  var data = event.dataTransfer;
+  if(data.files.length > 0){
+    //file dragged
+    MAORI.event.fileDragged(event);
+  }else{
+    //text dragged
+    MAORI.event.textDragged(event);
+  }
+};
+
+
+MAORI.event.textDragged = function(event){
+  var data = event.dataTransfer.getData('text');
+  propertyToAdd = {text: data, point: MAORI.event.getEventXY(event)}
+  MAORI.event.fireEvent(MAORI.event.textDropped, document, propertyToAdd);
 };
 
 
@@ -140,15 +153,16 @@ MAORI.event.objectDropped = function(event){
 * @returns the first file name (this is for now)
 * TODO: define request module
 */
-MAORI.event.uploadFile = function(event){
+MAORI.event.fileDragged = function(event){
   var data = event.dataTransfer;
   var name = 'Could not be retrieved';
-  if(data.files.length > 0){
-    name = data.files[0].name;
-  }else{
-    name = data.getData('text');
+  //for each file fires an event
+  for(var i = 0; i < data.files.length; i++){
+    var propertyToAdd = {file:data.files[i], point: MAORI.event.getEventXY(event)};
+    //hack: only to avoid putting all in the same pixel
+    propertyToAdd.point.x += 30 * i; 
+    MAORI.event.fireEvent(MAORI.event.fileDropped, document, propertyToAdd);
   }
-  return name;
   /*
   var data = event.dataTransfer;
   var boundary = '------multipartformboundary' + (new Date).getTime();
