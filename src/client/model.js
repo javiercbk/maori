@@ -47,10 +47,12 @@ MAORI.model.RAINDROP = false;
 MAORI.model.Drawable = function(x, y){
   this.x = x;
   this.y = y;
-  this.draw = function(){/*Do Nothing function*/};
+  this.draw = function(){/*Do nothing function*/};
   this.isTouched = function(x, y) { return false; };
   this.getRectangle = function(){ return 0; };
+  this.post = function(){/*Do nothing function*/};
 }
+
 
 
 /**
@@ -107,16 +109,32 @@ MAORI.model.File = function(x, y, imagesrc, file, ctx) {
   this.drawingContext = ctx;
   this.image = new Image();
   this.image.src = imagesrc;
+  
+  this.getRectangle = function(){
+    var height = newImg.height;
+    var width = newImg.width;
+    var textRec = this.text.getRectangle();
+    var textX = (textRec.x2 - textRec.x1);
+    var textY = (textRec.y2 - textRec.y1);
+    return {x1: this.x,
+            y1: this.y,
+            x2: this.x + width + textX,
+            y2: Math.max(textY, height)}
+  };
 
   this.draw = function() {   
-    //quizas haya que ponerlo el this.image.onload
+    //it would be better if drawImage
+    //was called after image.onload
     this.text.draw();
-    this.drawingContext.drawImage(this.image, x, y);
-    this.drawingContext.stroke();
+    this.image.onload = function(){
+      this.drawingContext.drawImage(this.image, x, y);
+      this.drawingContext.stroke();
+    };
+    
   };
 
   this.nameSizeInPixels = function(){
-    this.file.length * letterSize + xOffset;
+    this.file.name.length * letterSize + xOffset;
   };
 
   this.isTouched = function(x, y){
@@ -130,7 +148,7 @@ MAORI.model.File = function(x, y, imagesrc, file, ctx) {
 /**
 * Sets up the File prototype
 */
-MAORI.model.File.prototype = MAORI.model.Drawable;
+MAORI.model.File.prototype = new MAORI.model.Drawable();
 
 
 
@@ -153,6 +171,16 @@ MAORI.model.Text = function(x, y, text, ctx) {
     this.drawingContext.stroke();
   };
 
+  this.getRectangle = function(){
+    var measures = ctx.measureText(this.text);
+    var textX2 = measures.width;
+    var textY2 = measures.height
+    return {x1: this.x,
+            x2: textX2,
+            y1: this.y,
+            y2: textY2};
+  };
+
   this.isTouched = function(x, y){
     var size = ctx.measureText(this.text).width;
     return ((Math.abs(size - x) < 10 ||
@@ -165,7 +193,7 @@ MAORI.model.Text = function(x, y, text, ctx) {
 /**
 * Sets up the File prototype
 */
-MAORI.model.Text.prototype = MAORI.model.Drawable;
+MAORI.model.Text.prototype = new MAORI.model.Drawable();
 
 
 
@@ -192,8 +220,46 @@ MAORI.model.Line = function(fromX, fromY, toX, toY, ctx) {
 /**
 * Sets up the Line prototype
 */
-MAORI.model.Line.prototype = MAORI.model.Drawable;
+MAORI.model.Line.prototype = new MAORI.model.Drawable();
 
+
+/**
+* @constructor
+*/
+MAORI.model.BoxDecorator = function(rectangle, ctx) {
+  this.x = rectangle.x1;
+  this.y = rectangle.y1;
+  this.x2 = rectangle.x2;
+  this.y2 = rectangle.x2;
+  //10 pixel offset
+  var offset = 10;
+
+  this.setOffset = function(newOffset){
+    offset = new offset;
+  };
+
+  this.drawingContext = ctx;
+
+  this.draw = function() {
+    ctx.beginPath();
+    ctx.moveTo(this.x + offset, this.y + offset);
+    ctx.lineTo(this.x2 + offset, this.y + offset);
+    ctx.moveTo(this.x2 + offset, this.y + offset);
+    ctx.lineTo(this.x2 + offset, this.y2 + offset);
+    ctx.moveTo(this.x2 + offset, this.y2 + offset);
+    ctx.lineTo(this.x + offset, this.y2 + offset);
+    ctx.moveTo(this.x + offset, this.y2 + offset);
+    ctx.lineTo(this.x + offset, this.y + offset);
+    ctx.strokeStyle = "#E1D514";
+    ctx.stroke();
+  };
+};
+
+
+/**
+* Sets up the BoxDecorator prototype
+*/
+MAORI.model.BoxDecorator.prototype = new MAORI.model.Drawable();
 
 
 /**
@@ -215,7 +281,7 @@ MAORI.model.Arrow = function(fromX, fromY, toX, toY, ctx) {
 /**
 * Sets up the Arrow prototype
 */
-MAORI.model.Arrow.prototype = MAORI.model.Line;
+MAORI.model.Arrow.prototype = new MAORI.model.Line();
 
 
 
@@ -238,7 +304,7 @@ MAORI.model.TwoSidedArrow = function(fromX, fromY, toX, toY, ctx) {
 /**
 * Sets up the TwoSidedArrow prototype
 */
-MAORI.model.TwoSidedArrow.prototype = MAORI.model.Arrow;
+MAORI.model.TwoSidedArrow.prototype = new MAORI.model.Arrow();
 
 
 /**
@@ -292,6 +358,14 @@ MAORI.model.createRaindrop = function(x,y){
 };
 
 
+MAORI.model.createBoxDecorator = function(rectangle){
+  var ctx = MAORI.general.drawingCanvas.getContext('2d');
+  var box = new MAORI.model.BoxDecorator(rectangle, ctx);
+  MAORI.model.addDrawable(box);
+  MAORI.event.fireEvent(MAORI.event.paint, document, null);
+};
+
+
 /**
 * Finds wether an element was clicked
 */
@@ -302,7 +376,8 @@ MAORI.model.clickedAnyElement = function(event){
   for(var i = 0; i < drawableSize; i++){
     var drawable = MAORI.model.drawables[i];
     if(drawable.isTouched(x, y)){
-      MAORI.model.createRaindrop(drawable.x, drawable.y);
+      MAORI.model.createBoxDecorator(drawable.getRectangle());
+      //MAORI.model.createRaindrop(drawable.x, drawable.y);
     }
   }
 };
