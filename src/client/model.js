@@ -461,6 +461,7 @@ MAORI.model.createBoxDecorator = function(rectangle) {
 MAORI.model.clickedAnyElement = function(event) {
   var x = event.properties.x;
   var y = event.properties.y;
+  MAORI.model.clearSelected();
   var drawableSize = MAORI.model.drawables.length;
   //here I should ask if ctrl was pressed
   // in order to apply multi select
