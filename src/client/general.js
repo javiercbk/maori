@@ -17,7 +17,12 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>
 */
 
-//NAMESPACE PATTERN.
+'use strict';
+
+
+/**
+* Maori namespace pattern.
+*/
 var MAORI = MAORI || {};
 
 
@@ -30,13 +35,13 @@ MAORI.general = {};
 /**
 * Calculates the position of an HTML element
 * @param {Element} elementId of the element.
-* @return {Object} position of the given element 
+* @return {Object} position of the given element
 * or undefined if no element was found.
 */
 MAORI.general.getPosition = function(elementId) {
   var element = document.getElementById(elementId);
-  var position = {x:0, y:0};
-  if(element == null) {
+  var position = {x: 0, y: 0};
+  if (element == null) {
     return undefined;
   }
   position.x = element.offsetLeft;

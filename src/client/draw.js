@@ -17,7 +17,12 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>
 */
 
-//NAMESPACE PATTERN.
+'use strict';
+
+
+/**
+* Maori namespace pattern.
+*/
 var MAORI = MAORI || {};
 
 
@@ -38,20 +43,19 @@ MAORI.draw.animationId = -1;
 * is currently in progress it will do
 * nothing.
 */
-MAORI.draw.animate = function(){
-  if( MAORI.draw.animationId < 0){
+MAORI.draw.animate = function() {
+  if (MAORI.draw.animationId < 0) {
     MAORI.draw.animationId = setInterval(MAORI.draw.repaint, 50);
   }
 };
-
 
 
 /**
 * Stops the current animation, if no animation
 * is being displayed it will do nothing.
 */
-MAORI.draw.stopAnimation = function(){
-  if(MAORI.draw.animationId > 0){
+MAORI.draw.stopAnimation = function() {
+  if (MAORI.draw.animationId > 0) {
     clearInterval(MAORI.draw.animationId);
     MAORI.draw.animationId = -1;
     MAORI.draw.repaint();
@@ -62,14 +66,13 @@ MAORI.draw.stopAnimation = function(){
 /**
 * Draws all drawable registered without clearing the canvas
 */
-MAORI.draw.paint = function(){
+MAORI.draw.paint = function() {
   //Cycle through all drawable
   for (var i = 0; i < MAORI.model.drawables.length; i++) {
     var drawable = MAORI.model.drawables[i];
     drawable.draw();
   }
 };
-
 
 
 /**
@@ -84,10 +87,12 @@ MAORI.draw.repaint = function() {
 
 /**
 * Initilize draw module
+* @this {Module} MAORI.draw Module.
 */
-MAORI.draw.init = function(){
+MAORI.draw.init = function() {
   document.addEventListener(MAORI.event.repaint, this.repaint, false);
   document.addEventListener(MAORI.event.paint, this.paint, false);
   document.addEventListener(MAORI.event.animate, this.animate, false);
-  document.addEventListener(MAORI.event.stopAnimation, this.stopAnimation, false);
+  document.addEventListener(MAORI.event.stopAnimation,
+                            this.stopAnimation, false);
 };
