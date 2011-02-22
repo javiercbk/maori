@@ -23,17 +23,17 @@
 %%% along with this program.  If not, see <http://www.gnu.org/licenses/>
 %%%-------------------------------------------------------------------
 -module(otgeneral).
--import(response).
+-import(response,[ok_response/2,warning_response/2]).
 -export([otrelation/2,otresolve/2]).
 
 %%relate/break Node to Node and relate/break Node to Node
 %%cant create/break relation between node and itself so nop is performed
 otrelation({Command,{Node,Node}},{Command,{Node,Node}}) ->
-    warning_reponse(nop,nop);
+    warning_response(nop,nop);
 %%relate/break Node to Node and relate/break Node1 to Node1
 %%cant create/break relation between node and itself so nop is performed
 otrelation({Command,{Node,Node}},{Command,{Node1,Node1}}) ->
-    warning_reponse(nop,nop);
+    warning_response(nop,nop);
 %%relate/break Node to Node and relate/break Node1 to Node
 %%cant create/break relation between node and itself so nop is performed
 otrelation({Command,{Node,Node}},{Command,{Node1,Node}}) ->
@@ -82,35 +82,33 @@ otrelation({Command,{Node1,Node}},{Command,{Node2,Node}})->
 otrelation({Command,{Node1,Node2}},{Command,{Node3,Node4}}) ->
     ok_response({Command,{Node3,Node4}},{Command,{Node1,Node2}});
 %%Relate/Break Node1 with OtherNode and nop
-otrelation({Command, {Node, OtherNode}}, nop) ->
-    ok_response(nop, {Command, {Node, OtherNode}});
-%%Relate/Break Node1 with OtherNode and nop
 %%cant create/break relation between node and itself so nop is performed
-otrelation({Command, {Node, Node}}, nop) ->
-    warning_response(nop, nop).
-
-
+otrelation({_, {Node, Node}}, nop) ->
+    warning_response(nop, nop);
+%%Relate/Break Node1 with OtherNode and nop
+otrelation({Command, {Node, OtherNode}}, nop) ->
+    ok_response(nop, {Command, {Node, OtherNode}}).
 %%relate Node to Node and break Node to Node
 %%cant create/break relation between node and itself so nop is performed
-otresolve({Command1,{Node,Node}},{Command2,{Node,Node}}) ->
-    warning_reponse(nop,nop);
+otresolve({_1,{Node,Node}},{_2,{Node,Node}}) ->
+    warning_response(nop,nop);
 %%relate Node to Node and break Node1 to Node1
 %%cant create/break relation between node and itself so nop is performed
-otresolve({Command1,{Node,Node}},{Command2,{Node1,Node1}}) ->
-    warning_reponse(nop,nop);
+otresolve({_,{Node,Node}},{_,{Node1,Node1}}) ->
+    warning_response(nop,nop);
 %%relate Node to Node and break Node1 to Node
 %%cant create/break relation between node and itself so nop is performed
-otresolve({Command1,{Node,Node}},{Command2,{Node1,Node}}) ->
+otresolve({_,{Node,Node}},{Command2,{Node1,Node}}) ->
     warning_response({Command2,{Node1,Node}},nop);
 %%relate Node1 to Node and break Node to Node
 %%cant create/break relation between node and itself so nop is performed
-otresolve({Command1,{Node1,Node}},{Command2,{Node,Node}}) ->
+otresolve({Command1,{Node1,Node}},{_,{Node,Node}}) ->
     warning_response(nop,{Command1,{Node1,Node}});
 %%relate Node to Node and break Node to Node1
 %%cant create/break relation between node and itself so nop is performed
-otresolve({Command1,{Node,Node}},{Command2,{Node,Node1}}) ->
+otresolve({_,{Node,Node}},{Command2,{Node,Node1}}) ->
     warning_response({Command2,{Node,Node1}},nop);
 %%relate Node to Node1 and break Node to Node
 %%cant break relation between node and itself so nop is performed
-otresolve({Command1,{Node,Node1}},{Command2,{Node,Node}}) ->
-    warning_response(nop,{Command1,{Node,Node1}});
+otresolve({Command1,{Node,Node1}},{_,{Node,Node}}) ->
+    warning_response(nop,{Command1,{Node,Node1}}).

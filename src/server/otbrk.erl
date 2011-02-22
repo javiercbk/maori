@@ -22,6 +22,7 @@
 %%% along with this program.  If not, see <http://www.gnu.org/licenses/>
 %%%-------------------------------------------------------------------
 -module(otbrk).
+-import(response).
 -import(otgeneral).
 -export([otbrk/2]).
 
@@ -42,16 +43,16 @@ otbrk({brk,Nodes},{brk,OtherNodes}) ->
 %%-----------------
 %%break & insert
 %%-----------------
-otbrk({brk,{Node,Node}},{ins,(Node,Parent)})->
-    warning_response({ins,(Node,Parent)},nop);
-otbrk({brk,{Node1,Node1}},{ins,(Node,Parent)}) ->
-    warning_response({ins,(Node,Parent)},nop);
-otbrk({brk,{Node,Node1}},{ins,(Node,Parent)}) ->
-    ok_response({ins,(Node,Parent)},{brk,{Node,Node1}});
-otbrk({brk,{Node1,Node}},{ins,(Node,Parent)}) ->
-    ok_response({ins,(Node,Parent)},{brk,{Node1,Node}});
-otbrk({brk,{Node1,Node2}},{ins,(Node,Parent)}) ->
-    ok_response({ins,(Node,Parent)},{brk,{Node1,Node2}});
+otbrk({brk,{Node,Node}},{ins,{Node,Parent}})->
+    warning_response({ins,{Node,Parent}},nop);
+otbrk({brk,{Node1,Node1}},{ins,{Node,Parent}}) ->
+    warning_response({ins,{Node,Parent}},nop);
+otbrk({brk,{Node,Node1}},{ins,{Node,Parent}}) ->
+    ok_response({ins,{Node,Parent}},{brk,{Node,Node1}});
+otbrk({brk,{Node1,Node}},{ins,{Node,Parent}}) ->
+    ok_response({ins,{Node,Parent}},{brk,{Node1,Node}});
+otbrk({brk,{Node1,Node2}},{ins,{Node,Parent}}) ->
+    ok_response({ins,{Node,Parent}},{brk,{Node1,Node2}});
 
 %%-----------------
 %%break & relate
@@ -96,13 +97,13 @@ otbrk({brk,Nodes},{rel,Nodes1}) ->
 %%-----------------
 %%break & delete
 %%-----------------
-otbrk({brk,{Node,Node}},{del,(Node,Parent)})->
-    warning_response({del,(Node,Parent)},nop);
-otbrk({brk,{Node1,Node1}},{del,(Node,Parent)}) ->
-    warning_response({del,(Node,Parent)},nop);
-otbrk({brk,{Node,Node1}},{del,(Node,Parent)}) ->
-    ok_response({del,(Node,Parent)},{rel,{Node,Node1}});
-otbrk({brk,{Node1,Node}},{del,(Node,Parent)}) ->
-    ok_response({del,(Node,Parent)},{rel,{Node1,Node}});
-otbrk({brk,{Node1,Node2}},{del,(Node,Parent)}) ->
-    ok_response({del,(Node,Parent)},{rel,{Node1,Node2}});
+otbrk({brk,{Node,Node}},{del,{Node,Parent}})->
+    warning_response({del,{Node,Parent}},nop);
+otbrk({brk,{Node1,Node1}},{del,{Node,Parent}}) ->
+    warning_response({del,{Node,Parent}},nop);
+otbrk({brk,{Node,Node1}},{del,{Node,Parent}}) ->
+    ok_response({del,{Node,Parent}},{rel,{Node,Node1}});
+otbrk({brk,{Node1,Node}},{del,{Node,Parent}}) ->
+    ok_response({del,{Node,Parent}},{rel,{Node1,Node}});
+otbrk({brk,{Node1,Node2}},{del,{Node,Parent}}) ->
+    ok_response({del,{Node,Parent}},{rel,{Node1,Node2}}).

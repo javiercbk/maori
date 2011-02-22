@@ -23,11 +23,10 @@
 %%% along with this program.  If not, see <http://www.gnu.org/licenses/>
 %%%-------------------------------------------------------------------
 -module(response).
--export([ok_response/2,warning_response/2])
+-export([ok_response/2,warning_response/2]).
 
 ok_response(OperationClient, OperationServer)->
     {ok,{OperationClient, OperationServer}}.
 
-%%is this the right way to signal a warning???
 warning_response(OperationClient, OperationServer)->
     {warn,{OperationClient, OperationServer}}.

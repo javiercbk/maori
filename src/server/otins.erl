@@ -1,7 +1,7 @@
 %%%-------------------------------------------------------------------
 %%% File    : otins.erl
 %%% Author  : Javier Lecuona <javierlecuona@gmail.com>
-%%% Description : 
+%%% Description : insert ot functions
 %%%
 %%% Created : 13 Feb 2011 by Javier Lecuona <javierlecuona@gmail.com>
 %%%
@@ -23,7 +23,7 @@
 %%% along with this program.  If not, see <http://www.gnu.org/licenses/>
 %%%-------------------------------------------------------------------
 -module(otins).
--import(response).
+-import(response,[ok_response/2,warning_response/2]).
 -export([otins/2]).
 
 %%*****************
@@ -40,7 +40,7 @@ otins({ins,{Node,Parent1}},{ins,{Node,Parent2}}) ->
     ok_response({ins,{Node,Parent2}},{ins,{Node,Parent1}});
 %%different nodes same parent
 otins({ins,{Node1,Parent}},{ins,{Node2,Parent}}) ->
-    ok_response({ins,{Node,Parent}},{ins,{Node1,Parent}});
+    ok_response({ins,{Node2,Parent}},{ins,{Node1,Parent}});
 %%different nodes different parents
 otins({ins,{Node1,Parent1}},{ins,{Node2,Parent2}})->
     ok_response({ins,{Node2,Parent2}},{ins,{Node1,Parent1}});
@@ -52,7 +52,7 @@ otins({ins,{Node,Parent}},{rel,{Node1,Node2}}) ->
     ok_response({rel,{Node1,Node2}}, {ins,{Node,Parent}});
 %%insert Node in Parent and relate same node to other node
 otins({ins,{Node,Parent}},{rel,{Node,Node2}}) ->
-    ok_response({rel,{Node1,Node2}},{ins,{Node,Parent}});
+    ok_response({rel,{Node,Node2}},{ins,{Node,Parent}});
 otins({ins,{Node,Parent}},{rel,{Node2,Node}}) ->
     ok_response({rel,{Node2,Node}},{ins,{Node,Parent}});
 %%insert Node in Parent and relate same node to same node
