@@ -19,7 +19,10 @@
 
 'use strict';
 
-//NAMESPACE PATTERN.
+
+/**
+* Maori namespace pattern.
+*/
 var MAORI = MAORI || {};
 
 
@@ -207,9 +210,14 @@ MAORI.model.Text = function(x, y, text, ctx) {
 
   this.isTouched = function(x, y) {
     var size = ctx.measureText(this.text).width;
-    return ((Math.abs(size - x) < 10 ||
-             Math.abs(this.x - x) < 10) &&
-            Math.abs(this.y - y) < 10);
+    var inXRect = false;
+    if (x > this.x) {
+      inXRect = Math.abs(x - this.x - size) < size + 5;
+    } else {
+      inXRect = Math.abs(this.x - x) < 5;
+    }
+    var inYRect = Math.abs(this.y - y) < 10;
+    return inXRect && inYRect;
   };
 };
 
