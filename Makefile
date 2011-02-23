@@ -9,6 +9,10 @@ all:
 	$(ERLC) $(ERLC_FLAGS) $(SRC_DIR)/response.erl
 	$(ERLC) $(ERLC_FLAGS) $(SRC_DIR)/otgeneral.erl
 	$(ERLC) $(ERLC_FLAGS) $(SRC_DIR)/otins.erl
+	$(ERLC) $(ERLC_FLAGS) $(SRC_DIR)/otdel.erl
+	$(ERLC) $(ERLC_FLAGS) $(SRC_DIR)/otrel.erl
+	$(ERLC) $(ERLC_FLAGS) $(SRC_DIR)/otbrk.erl
+	$(ERLC) $(ERLC_FLAGS) $(SRC_DIR)/protocol.erl
 #	@cp $(SRC_DIR)/server/misultin.app.src $(EBIN_DIR)/misultin.app	
 
 clean:

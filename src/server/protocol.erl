@@ -23,11 +23,11 @@
 %%% along with this program.  If not, see <http://www.gnu.org/licenses/>
 %%%-------------------------------------------------------------------
 -module(protocol).
--import(otnop).
--import(otins).
--import(otrel).
--import(otbrk).
--import(otdel).
+-import(otnop,[otnop/2]).
+-import(otins,[otins/2]).
+-import(otrel,[otrel/2]).
+-import(otbrk,[otbrk/2]).
+-import(otdel,[otdel/2]).
 -export([ot/2]).
 
 % function: ot*(ClientAction, ServerAction) -> {ok,{ClientPerform, ServerPerform}} 

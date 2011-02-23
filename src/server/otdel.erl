@@ -23,6 +23,8 @@
 %%% along with this program.  If not, see <http://www.gnu.org/licenses/>
 %%%-------------------------------------------------------------------
 -module(otdel).
+-import(response,[ok_response/2, warning_response/2]).
+-export([otdel/2]).
 
 otdel({del, {Node, Parent}}, nop) ->
     ok_response(nop, {del, {Node, Parent}});
@@ -36,31 +38,30 @@ otdel({del,{Node,Parent1}},{del,{Node,Parent2}}) ->
     ok_response({del,{Node,Parent2}},{del,{Node,Parent1}});
 %%different nodes same parent
 otdel({del,{Node1,Parent}},{del,{Node2,Parent}}) ->
-    ok_response({del,{Node,Parent}},{del,{Node1,Parent}});
+    ok_response({del,{Node2,Parent}},{del,{Node1,Parent}});
 %%different nodes different parents
 otdel({del,{Node1,Parent1}},{del,{Node2,Parent2}})->
     ok_response({del,{Node2,Parent2}},{del,{Node1,Parent1}});
 
 %%-----------------
 %%delete & relate
-%%delete Node in Parent and Relate other node With Other node
-otdel({ins,{Node,Parent}},{rel,{Node1,Node2}}) ->
-    ok_response({rel,{Node1,Node2}}, {ins,{Node,Parent}});
 %%delete Node in Parent and relate same node to other node
-otdel({ins,{Node,Parent}},{rel,{Node,Node2}}) ->
-    ok_response({rel,{Node1,Node2}},{ins,{Node,Parent}});
-otdel({ins,{Node,Parent}},{rel,{Node2,Node}}) ->
-    ok_response({rel,{Node2,Node}},{ins,{Node,Parent}});
+otdel({del,{Node,Parent}},{rel,{Node,Node2}}) ->
+    ok_response({rel,{Node,Node2}},{del,{Node,Parent}});
+%%
+otdel({del,{Node,Parent}},{rel,{Node2,Node}}) ->
+    ok_response({rel,{Node2,Node}},{del,{Node,Parent}});
 %%delete Node in Parent and relate same node to same node
 %%cant create create relation between node and itself so nop is performed
-otdel({ins,{Node,Parent}},{rel,{Node,Node}}) ->
-    ok_response(nop, {ins,{Node,Parent}});
+otdel({del,{Node,Parent}},{rel,{Node,Node}}) ->
+    ok_response(nop, {del,{Node,Parent}});
+%%delete Node in Parent and Relate other node With Other node
+otdel({del,{Node,Parent}},{rel,{Node1,Node2}}) ->
+    ok_response({rel,{Node1,Node2}}, {del,{Node,Parent}});
+
 
 %%-----------------
 %%delete & break
-%%delete a Node into Parent and break Node1 from Node2
-otdel({ins,{Node,Parent}},{brk,{Node1,Node2}}) ->
-    ok_response({brk,{Node1,Node2}}, {ins,{Node,Parent}});
 %%delete Node into Parent and break Node from Node1
 otdel({ins,{Node,Parent}},{brk,{Node,Node1}}) ->
     ok_response({brk,{Node,Node1}}, {ins,{Node,Parent}});
@@ -68,16 +69,19 @@ otdel({ins,{Node,Parent}},{brk,{Node,Node1}}) ->
 %%cant break Node from Node so nop is performed
 otdel({ins,{Node,Parent}},{brk,{Node,Node}}) ->
     ok_response(nop, {ins,{Node,Parent}});
+%%delete a Node into Parent and break Node1 from Node2
+otdel({ins,{Node,Parent}},{brk,{Node1,Node2}}) ->
+    ok_response({brk,{Node1,Node2}}, {ins,{Node,Parent}});
 
 %%-----------------
 %%delete & insert
-%%delete Node into Parent and delete Node1 from Parent1
-otdel({ins,{Node,Parent}},{del,{Node1,Parent1}}) ->
-    ok_response({del,{Node1,Parent1}}, {ins,{Node,Parent}});
 %%delete Node into Parent and delete Node from Parent1
 otdel({ins,{Node,Parent}},{del,{Node,Parent1}}) ->
     ok_response({del,{Node,Parent1}}, {ins,{Node,Parent}});
 %%delete Node into Parent and delete Node from Parent
 %%is better to force to delete twice than lose data
 otdel({ins,{Node,Parent}},{del,{Node,Parent}}) ->
-    ok_response(nop, {ins,{Node,Parent}}).
+    ok_response(nop, {ins,{Node,Parent}});
+%%delete Node into Parent and delete Node1 from Parent1
+otdel({ins,{Node,Parent}},{del,{Node1,Parent1}}) ->
+    ok_response({del,{Node1,Parent1}}, {ins,{Node,Parent}}).

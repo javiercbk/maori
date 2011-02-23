@@ -23,7 +23,8 @@
 %%% along with this program.  If not, see <http://www.gnu.org/licenses/>
 %%%-------------------------------------------------------------------
 -module(otrel).
--import(otgeneral).
+-import(general,[otrelation/2, otresolve/2]).
+-import(response,[ok_response/2, warning_response/2]).
 -export([otrel/2]).
 
 %%-----------------
@@ -37,16 +38,16 @@ otrel({rel,Nodes},{rel,OtherNodes}) ->
 %%-----------------
 %%relate & insert
 %%-----------------
-otrel({rel,{Node,Node}},{ins,(Node,Parent)})->
-    warning_response({ins,(Node,Parent)},nop);
-otrel({rel,{Node1,Node1}},{ins,(Node,Parent)}) ->
-    warning_response({ins,(Node,Parent)},nop);
-otrel({rel,{Node,Node1}},{ins,(Node,Parent)}) ->
-    ok_response({ins,(Node,Parent)},{rel,{Node,Node1}});
-otrel({rel,{Node1,Node}},{ins,(Node,Parent)}) ->
-    ok_response({ins,(Node,Parent)},{rel,{Node1,Node}});
-otrel({rel,{Node1,Node2}},{ins,(Node,Parent)}) ->
-    ok_response({ins,(Node,Parent)},{rel,{Node1,Node2}});
+otrel({rel,{Node,Node}},{ins,{Node,Parent}})->
+    warning_response({ins,{Node,Parent}},nop);
+otrel({rel,{Node1,Node1}},{ins,{Node,Parent}}) ->
+    warning_response({ins,{Node,Parent}},nop);
+otrel({rel,{Node,Node1}},{ins,{Node,Parent}}) ->
+    ok_response({ins,{Node,Parent}},{rel,{Node,Node1}});
+otrel({rel,{Node1,Node}},{ins,{Node,Parent}}) ->
+    ok_response({ins,{Node,Parent}},{rel,{Node1,Node}});
+otrel({rel,{Node1,Node2}},{ins,{Node,Parent}}) ->
+    ok_response({ins,{Node,Parent}},{rel,{Node1,Node2}});
 
 %%-----------------
 %%relate & break
@@ -91,13 +92,13 @@ otrel({rel,Nodes},{brk,Nodes1}) ->
 %%-----------------
 %%relate & delete
 %%-----------------
-otrel({rel,{Node,Node}},{del,(Node,Parent)})->
-    warning_response({del,(Node,Parent)},nop);
-otrel({rel,{Node1,Node1}},{del,(Node,Parent)}) ->
-    warning_response({del,(Node,Parent)},nop);
-otrel({rel,{Node,Node1}},{del,(Node,Parent)}) ->
-    ok_response({del,(Node,Parent)},{rel,{Node,Node1}});
-otrel({rel,{Node1,Node}},{del,(Node,Parent)}) ->
-    ok_response({del,(Node,Parent)},{rel,{Node1,Node}});
-otrel({rel,{Node1,Node2}},{del,(Node,Parent)}) ->
-    ok_response({del,(Node,Parent)},{rel,{Node1,Node2}});
+otrel({rel,{Node,Node}},{del,{Node,Parent}})->
+    warning_response({del,{Node,Parent}},nop);
+otrel({rel,{Node1,Node1}},{del,{Node,Parent}}) ->
+    warning_response({del,{Node,Parent}},nop);
+otrel({rel,{Node,Node1}},{del,{Node,Parent}}) ->
+    ok_response({del,{Node,Parent}},{rel,{Node,Node1}});
+otrel({rel,{Node1,Node}},{del,{Node,Parent}}) ->
+    ok_response({del,{Node,Parent}},{rel,{Node1,Node}});
+otrel({rel,{Node1,Node2}},{del,{Node,Parent}}) ->
+    ok_response({del,{Node,Parent}},{rel,{Node1,Node2}}).

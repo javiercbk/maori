@@ -22,14 +22,14 @@
 %%% along with this program.  If not, see <http://www.gnu.org/licenses/>
 %%%-------------------------------------------------------------------
 -module(otbrk).
--import(response).
--import(otgeneral).
+-import(general,[otrelation/2, otresolve/2]).
+-import(response,[ok_response/2, warning_response/2]).
 -export([otbrk/2]).
 
-otbrk({brk, {Node, OtherNode}}, nop) ->
-    ok_response(nop, {brk, {Node, OtherNode}});
 otbrk({brk, {Node, Node}}, nop) ->
     warning_response({nop,'Cannot break Node from itself'}, nop);
+otbrk({brk, {Node, OtherNode}}, nop) ->
+    ok_response(nop, {brk, {Node, OtherNode}});
 
 %%-----------------
 %%break & break
