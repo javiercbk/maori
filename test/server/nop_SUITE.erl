@@ -1,7 +1,7 @@
 %%%-------------------------------------------------------------------
-%%% File    : protocol_SUITE.erl
-%%% Author  : Javier Lecuona <chuby@bones>
-%%% Description : full protocol test suite
+%%% File    : nop_SUITE.erl
+%%% Author  : Javier Lecuona <javierlecuona@gmail.com>
+%%% Description : no operation test SUITE
 %%%
 %%% Created : 13 Feb 2011 by Javier Lecuona <javierlecuona@gmail.com>
 %%%
@@ -22,30 +22,30 @@
 %%% You should have received a copy of the GNU General Public License
 %%% along with this program.  If not, see <http://www.gnu.org/licenses/>
 %%%-------------------------------------------------------------------
--module(protocol_SUITE).
+-module(nop_SUITE).
 -include_lib("eunit/include/eunit.hrl").
 %% Note: This directive should only be used in test suites.
 %%-compile(export_all).
--import(response,[ok_response/2, warning_response/2]).
+-import(protocol,[ot/2]).
 
 %%----------------------
-%%simple response test
+%% protocol nop test
 %%----------------------
-simple_ok_response_test() ->
-    ?_assertEqual({ok,{test1,test2}}, ok_response(test1,test2)).
-simple_warn_response_test() ->
-    ?_assertEqual({warn,{test1,test2}},warning_response(test1,test2)).
-
-%%----------------------
-%% protocol complex operation test
-%%----------------------
-nop_protocol_test() ->
-    eunit:test(nop_SUITE).
-ins_protocol_test() ->
-    eunit:test(ins_SUITE).
-del_protocol_test() ->
-    eunit:test(del_SUITE).
-brk_protocol_test() ->
-    eunit:test(brk_SUITE).
-rel_protocol_test() ->
-    eunit:test(rel_SUITE).
+simple_nop_test() -> 
+    ?_assertEqual({ok, {nop, nop}}, ot(nop, nop)).
+nop_ins1_test() -> 
+    {ok, {{ins,{1,2}}, nop}} = ot(nop, {ins,{1,2}}).
+nop_ins2_test() -> 
+    {ok, {{ins,{1,1}}, nop}} = ot(nop, {ins,{1,1}}).
+nop_del1_test() -> 
+    {ok, {{del,{1,1}}, nop}} = ot(nop, {del,{1,1}}).
+nop_del2_test() -> 
+    {ok, {{del,{1,2}}, nop}} = ot(nop, {del,{1,2}}).
+nop_brk1_test() ->
+    {ok,{{brk,{1,2}},nop}} = ot(nop,{brk,{1,2}}).
+nop_brk2_test() ->
+    {warn, {nop, nop}} = ot(nop,{brk,{1,1}}).
+nop_rel1_test() ->
+    {ok,{rel,{1,2}},nop} = ot(nop,{rel,{1,2}}).
+nop_rel2_test() ->
+    {warn, {nop, nop}} = ot(nop,{rel,{1,1}}).

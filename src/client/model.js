@@ -54,10 +54,47 @@ MAORI.model.RAINDROP = false;
 MAORI.model.Drawable = function(x, y) {
   this.x = x;
   this.y = y;
+  this.scale = 1;
   this.draw = function() {/*Do nothing function*/};
   this.isTouched = function(x, y) { return false; };
   this.getRectangle = function() { return 0; };
   this.post = function() {/*Do nothing function*/};
+  this.scale = function() {/*Do nothing function*/};
+};
+
+
+
+/**
+* @constructor
+* Circle Constructor
+* @param {Integer} x position.
+* @param {Integer} y position.
+* @param {Float} radius of the circle.
+* @param {Object} color of the circle.
+* @param {Object} ctx 2D drawing context.
+*/
+MAORI.model.Circle = function(x, y, radius, color, ctx) {
+  this.x = x;
+  this.y = y;
+  this.color = color;
+  this.radius = radius;
+  this.drawingContext = ctx;
+
+  this.draw = function() {
+    var colorStyle = 'rgba(' + this.color.r + ',' +
+        this.color.g + ',' + this.color.b + ',' +
+        this.color.alpha + ')';
+    this.drawingContext.strokeStyle = colorStyle;
+    this.drawingContext.beginPath();
+    this.drawingContext.arc(this.x, this.y, this.radius, 0,
+                            Math.PI * 2, true);
+    this.drawingContext.closePath();
+    this.drawingContext.stroke();
+  };
+
+  this.scale = function() {
+
+  };
 };
 
 
@@ -67,29 +104,27 @@ MAORI.model.Drawable = function(x, y) {
 * Raindrop Constructor
 * @param {Integer} x position.
 * @param {Integer} y position.
+* @param {Object} color rgb.
 * @param {Object} ctx 2D drawing context.
 */
-MAORI.model.Raindrop = function(x, y, ctx) {
+MAORI.model.Raindrop = function(x, y, color, ctx) {
   this.x = x;
   this.y = y;
   this.drawingContext = ctx;
-  this.currentAlpha = 1.0;
-  this.currentSize = 10;
+  var currentAlpha = 1.0;
+  var currentSize = 10;
+  this.color = color;
 
   this.draw = function() {
-    //hardcoded color
-    this.drawingContext.strokeStyle = 'rgba(70,213,222, ' +
-        this.currentAlpha + ')';
-    this.drawingContext.beginPath();
-    this.drawingContext.arc(this.x, this.y, this.currentSize, 0,
-                            Math.PI * 2, true);
-    this.drawingContext.closePath();
-    this.drawingContext.stroke();
-    this.currentAlpha = this.currentAlpha - 0.05;
-    if ((this.currentAlpha - 0.01) <= 0.00) {
-      this.currentAlpha = 0;
+    this.color.alpha = currentAlpha;
+    var circle = new MAORI.model.Circle(this.x, this.y,
+        currentSize, this.color, this.drawingContext);
+    circle.draw();
+    currentAlpha = currentAlpha - 0.05;
+    if ((currentAlpha - 0.01) <= 0.00) {
+      currentAlpha = 0;
     }
-    this.currentSize += 1;
+    currentSize += 1;
     if (this.isNonVisible()) {
       MAORI.model.removeDrawable(this);
     }
@@ -155,9 +190,9 @@ MAORI.model.File = function(x, y, imagesrc, file, ctx) {
   };
 
   this.isTouched = function(x, y) {
-    return ((Math.abs(this.x - x) < 10 &&
-             Math.abs(this.y - y) < 10) ||
-            this.text.isTouched());
+    var rectangle = this.getRectangle();
+    return ((x < rectangle.x2 && x > rectangle.x1) &&
+            (y < rectangle.y2 && y > rectangle.y1));
   };
 };
 
@@ -187,10 +222,12 @@ MAORI.model.Text = function(x, y, text, ctx) {
   this.y = y;
   this.drawingContext = ctx;
   this.text = text;
+  //20 chars
+  var MAX_LENGTH = 20;
 
   var rectX = 10;
   var rectY = 10;
-  var fontSize = 12;
+  var fontSize = 100;
 
   this.draw = function() {
     this.drawingContext.font = fontSize + 'px Arial';
@@ -204,20 +241,16 @@ MAORI.model.Text = function(x, y, text, ctx) {
     var textX2 = measures.width;
     return {x1: this.x,
       x2: textX2 + this.x,
-      y1: this.y - (fontSize / 2),
+      //1.5 is an empiric value. Should investigate
+      //a little more about fonts
+      y1: this.y - (fontSize / 1.5),
       y2: this.y};
   };
 
   this.isTouched = function(x, y) {
-    var size = ctx.measureText(this.text).width;
-    var inXRect = false;
-    if (x > this.x) {
-      inXRect = Math.abs(x - this.x - size) < size + 5;
-    } else {
-      inXRect = Math.abs(this.x - x) < 5;
-    }
-    var inYRect = Math.abs(this.y - y) < 10;
-    return inXRect && inYRect;
+    var rectangle = this.getRectangle();
+    return ((x < rectangle.x2 && x > rectangle.x1) &&
+            (y < rectangle.y2 && y > rectangle.y1));
   };
 };
 
@@ -436,7 +469,8 @@ MAORI.model.createRaindrop = function(x, y) {
   var x = event.properties.x;
   var y = event.properties.y;
   var ctx = MAORI.general.drawingCanvas.getContext('2d');
-  var rainDrop = new MAORI.model.Raindrop(x, y, ctx);
+  var color = {r: 70, g: 213, b: 222};
+  var rainDrop = new MAORI.model.Raindrop(x, y, color, ctx);
   MAORI.model.addDrawable(rainDrop);
   MAORI.event.fireEvent(MAORI.event.animate, document, null);
 };
@@ -518,7 +552,8 @@ MAORI.model.createFile = function(event) {
 MAORI.model._createFile = function(x, y, f) {
   var ctx = MAORI.general.drawingCanvas.getContext('2d');
   var file = new MAORI.model.File(x, y, 'file_icon.gif', f, ctx);
-  var raindrop = new MAORI.model.Raindrop(x + 7 , y + 7, ctx);
+  var color = {r: 70, g: 213, b: 222};
+  var raindrop = new MAORI.model.Raindrop(x + 7 , y + 7, color, ctx);
   MAORI.model.addDrawable(file);
   MAORI.model.addDrawable(raindrop);
   MAORI.event.fireEvent(MAORI.event.animate, document, null);
@@ -549,7 +584,8 @@ MAORI.model._createText = function(x, y, textString) {
   var ctx = MAORI.general.drawingCanvas.getContext('2d');
   var text = new MAORI.model.Text(x, y, textString, ctx);
   MAORI.model.addDrawable(text);
-  var raindrop = new MAORI.model.Raindrop(x + 7, y, ctx);
+  var color = {r: 70, g: 213, b: 222};
+  var raindrop = new MAORI.model.Raindrop(x + 7, y, color, ctx);
   MAORI.model.addDrawable(raindrop);
   MAORI.event.fireEvent(MAORI.event.animate, document, null);
   return text;

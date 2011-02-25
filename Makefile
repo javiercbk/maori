@@ -16,7 +16,13 @@ all:
 	$(ERLC) $(ERLC_FLAGS) $(SRC_DIR)/otbrk.erl
 	$(ERLC) $(ERLC_FLAGS) $(SRC_DIR)/protocol.erl
 test: debug
+	$(ERLC) $(ERLC_FLAGS) $(TEST_DIR)/nop_SUITE.erl
+	$(ERLC) $(ERLC_FLAGS) $(TEST_DIR)/ins_SUITE.erl
+	$(ERLC) $(ERLC_FLAGS) $(TEST_DIR)/del_SUITE.erl
+	$(ERLC) $(ERLC_FLAGS) $(TEST_DIR)/brk_SUITE.erl
+	$(ERLC) $(ERLC_FLAGS) $(TEST_DIR)/rel_SUITE.erl
 	$(ERLC) $(ERLC_FLAGS) $(TEST_DIR)/protocol_SUITE.erl
+
 runtest: test
 	erl -noshell -pa $(EBIN_DIR) -eval "eunit:test(protocol_SUITE, [verbose])" -s init stop
 
