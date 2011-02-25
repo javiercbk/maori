@@ -35,17 +35,3 @@ simple_ok_response_test() ->
     ?_assertEqual({ok,{test1,test2}}, ok_response(test1,test2)).
 simple_warn_response_test() ->
     ?_assertEqual({warn,{test1,test2}},warning_response(test1,test2)).
-
-%%----------------------
-%% protocol complex operation test
-%%----------------------
-nop_protocol_test() ->
-    eunit:test(nop_SUITE).
-ins_protocol_test() ->
-    eunit:test(ins_SUITE).
-del_protocol_test() ->
-    eunit:test(del_SUITE).
-brk_protocol_test() ->
-    eunit:test(brk_SUITE).
-rel_protocol_test() ->
-    eunit:test(rel_SUITE).

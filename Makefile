@@ -25,6 +25,11 @@ test: debug
 
 runtest: test
 	erl -noshell -pa $(EBIN_DIR) -eval "eunit:test(protocol_SUITE, [verbose])" -s init stop
+	erl -noshell -pa $(EBIN_DIR) -eval "eunit:test(nop_SUITE, [verbose])" -s init stop
+	erl -noshell -pa $(EBIN_DIR) -eval "eunit:test(ins_SUITE, [verbose])" -s init stop
+	erl -noshell -pa $(EBIN_DIR) -eval "eunit:test(del_SUITE, [verbose])" -s init stop
+	erl -noshell -pa $(EBIN_DIR) -eval "eunit:test(rel_SUITE, [verbose])" -s init stop
+	erl -noshell -pa $(EBIN_DIR) -eval "eunit:test(brk_SUITE, [verbose])" -s init stop
 
 clean:
 	@rm -rf $(EBIN_DIR)/*
