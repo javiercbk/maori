@@ -40,13 +40,13 @@ del_nop_test() ->
 %%----------------------
 %% Different parents different nodes
 del_ins1_test() ->
-    {ok,{ins,{1,2}},{del,{3,4}}} = ot({del,{3,4}},{ins,{1,2}}).
+    {ok,{{ins,{1,2}},{del,{3,4}}}} = ot({del,{3,4}},{ins,{1,2}}).
 %% Same parent different nodes
 del_ins2_test() ->
-    {ok,{ins,{1,2}},{del,{3,2}}} = ot({del,{3,2}},{ins,{1,2}}).
+    {ok,{{ins,{1,2}},{del,{3,2}}}} = ot({del,{3,2}},{ins,{1,2}}).
 %% Different parent same node
 del_ins3_test() ->
-    {ok,{ins,{1,2}},{del,{1,3}}} = ot({del,{1,3}},{ins,{1,2}}).
+    {ok,{{ins,{1,2}},{del,{1,3}}}} = ot({del,{1,3}},{ins,{1,2}}).
 %% Same parent same node
 del_ins4_test() ->
     {ok,{nop,nop}} = ot({del,{1,2}},{ins,{1,2}}).

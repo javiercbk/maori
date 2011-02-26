@@ -46,6 +46,6 @@ nop_brk1_test() ->
 nop_brk2_test() ->
     {warn, {nop, nop}} = ot(nop,{brk,{1,1}}).
 nop_rel1_test() ->
-    {ok,{rel,{1,2}},nop} = ot(nop,{rel,{1,2}}).
+    {ok,{{rel,{1,2}},nop}} = ot(nop,{rel,{1,2}}).
 nop_rel2_test() ->
     {warn, {nop, nop}} = ot(nop,{rel,{1,1}}).
