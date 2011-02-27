@@ -23,17 +23,21 @@
 %%% along with this program.  If not, see <http://www.gnu.org/licenses/>
 %%%-------------------------------------------------------------------
 -module(otrel).
--import(general,[otrelation/2, otresolve/2]).
+-import(otgeneral,[otrelation/2, otresolve/2]).
 -import(response,[ok_response/2, warning_response/2]).
 -export([otrel/2]).
+
+
+otrel({rel, {Node, Node}}, nop) ->
+    warning_response(nop, nop);
+otrel({rel, {Node, OtherNode}}, nop) ->
+    ok_response(nop, {rel, {Node, OtherNode}});
 
 %%-----------------
 %%relate & relate
 %%-----------------
-otrel({rel,Nodes},{rel,Nodes})->
-    otrelation({rel,Nodes},{rel,Nodes});
-otrel({rel,Nodes},{rel,OtherNodes}) ->
-    otrelation({rel,Nodes},{rel,OtherNodes});
+otrel({rel,Nodes},{rel,Nodes1})->
+    otrelation({rel,Nodes},{rel,Nodes1});
 
 %%-----------------
 %%relate & insert
@@ -52,13 +56,13 @@ otrel({rel,{Node1,Node2}},{ins,{Node,Parent}}) ->
 %%-----------------
 %%relate & break
 %%-----------------
-%%relate Node to Node1 twice so the are already sychronized
-%%better to force break twice than losing data
-otrel({rel,{Node,Node1}},{brk,{Node,Node1}}) ->
-    ok_response(nop,{rel,{Node,Node1}});
+%%resolve simple conflicts
+%%matches {rel,{1,1}},{brk,{1,1}}
+otrel({rel,{Node,Node}},{brk,{Node1,Node1}}) ->
+    otresolve({rel,{Node,Node}},{brk,{Node1,Node1}});
 %%relate Node1 to Node twice so the are already sychronized
 %%better to force break twice than losing data
-otrel({rel,{Node1,Node}},{brk,{Node1,Node}}) ->
+otrel({rel,{Node1,Node}},{brk,{Node1,Node}}) when Node =/= Node1 ->
     ok_response(nop,{rel,{Node1,Node}});
 %%relate Node1 to Node twice so the are already sychronized
 %%better to force break twice than losing data
@@ -84,8 +88,6 @@ otrel({rel,{Node1,Node}},{brk,{Node2,Node}})->
 otrel({rel,{Node1,Node2}},{brk,{Node3,Node4}}) ->
     ok_response({brk,{Node3,Node4}},{rel,{Node1,Node2}});
 %%resolve simple conflicts
-otrel({rel,Nodes},{brk,Nodes})->
-    otresolve({rel,Nodes},{brk,Nodes});
 otrel({rel,Nodes},{brk,Nodes1}) ->
     otresolve({rel,Nodes},{brk,Nodes1});
 

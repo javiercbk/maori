@@ -49,7 +49,7 @@ del_ins3_test() ->
     {ok,{{ins,{1,2}},{del,{1,3}}}} = ot({del,{1,3}},{ins,{1,2}}).
 %% Same parent same node
 del_ins4_test() ->
-    {ok,{nop,nop}} = ot({del,{1,2}},{ins,{1,2}}).
+    {ok,{{ins,{1,2}},nop}} = ot({del,{1,2}},{ins,{1,2}}).
 %%----------------------
 %% del with del test
 %%----------------------

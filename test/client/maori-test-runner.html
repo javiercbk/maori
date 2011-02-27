@@ -1,0 +1,58 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+
+  <title>Jasmine Test Runner</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+  <!-- include jasmine files here... -->
+  <link rel="stylesheet" type="text/css" href="../../lib/jasmine-1.0.1/jasmine.css">
+  <script type="text/javascript" src="../../lib/jasmine-1.0.1/jasmine.js"></script>
+  <script type="text/javascript" src="../../lib/jasmine-1.0.1/jasmine-html.js"></script>
+  
+  <!-- include source files here... -->
+  <script type="text/javascript" src="../../src/client/general.js"></script>
+  <script type="text/javascript" src="../../src/client/draw.js"></script>
+  <script type="text/javascript" src="../../src/client/event.js"></script>
+  <script type="text/javascript" src="../../src/client/model.js"></script>
+  
+  <!-- include test files here... -->
+  <script type="text/javascript" src="maori-test.js"></script>
+  <script type="text/javascript" src="strict-test.js"></script>
+</head>
+
+<body onload="(function () {
+              document.getElementById('__jasmine_TrivialReporter_showPassed__').click();
+              document.getElementById('__jasmine_TrivialReporter_showSkipped__').click();
+              }());">
+<script type="text/javascript">
+  jasmine.getEnv().addReporter(new jasmine.TrivialReporter());
+  <!--debugger;-->
+  jasmine.getEnv().execute();
+</script>
+
+<!--
+<script type="text/javascript">
+  (function() {
+  var jasmineEnv = jasmine.getEnv();
+  jasmineEnv.updateInterval = 1000;
+
+  var trivialReporter = new jasmine.TrivialReporter();
+
+  jasmineEnv.addReporter(trivialReporter);
+
+  jasmineEnv.specFilter = function(spec) {
+  return trivialReporter.specFilter(spec);
+  };
+
+  window.onload = function() {
+  jasmineEnv.execute();
+  };
+  })();
+</script>
+-->
+<canvas class="myCanvas" width="795px" height="500px" onclick="MAORI.event.onClickCanvas(event)">
+<p>Your browser doesn't support canvas.</p>
+</canvas>
+</body>
+</html>
