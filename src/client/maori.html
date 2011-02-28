@@ -33,7 +33,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 test
 </div>
 <div id="canvasZone" class="canvasZone">
-<canvas class="myCanvas" width="795px" height="500px" onclick="MAORI.event.onClickCanvas(event)">
+<canvas class="myCanvas" width="795px" height="500px" onmouseup="MAORI.event.onDragDrawable(event)"
+onmouseup="MAORI.event.onDropDrawable(event)"
+onmouseover="MAORI.event.onMouseOver(event)"
+onclick="MAORI.event.onClickCanvas(event)">
 <p>Your browser doesn't support canvas.</p>
 </canvas>
 </div>

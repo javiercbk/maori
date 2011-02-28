@@ -39,6 +39,37 @@ MAORI.model.drawables = [];
 
 
 /**
+* Selected elements on the canvas
+*/
+MAORI.model.selected = [];
+
+
+/**
+* Drawing canvas size
+*/
+MAORI.model.canvasSize = {x: 0, y: 0};
+
+
+/**
+* Current display rectangle
+*/
+MAORI.model.displaying = {x1: 0, x2: 0, y1: 0, y2: 0};
+
+
+/**
+* Flag to determine if there is a drag operation
+* currently being executed
+*/
+MAORI.model.dragState = false;
+
+
+/**
+* Array of objects currently being dragged
+*/
+MAORI.model.dragDrawables = [];
+
+
+/**
 * Raindrop activation
 */
 MAORI.model.RAINDROP = false;
@@ -227,7 +258,7 @@ MAORI.model.Text = function(x, y, text, ctx) {
 
   var rectX = 10;
   var rectY = 10;
-  var fontSize = 100;
+  var fontSize = 12;
 
   this.draw = function() {
     this.drawingContext.font = fontSize + 'px Arial';
@@ -493,13 +524,13 @@ MAORI.model.createBoxDecorator = function(rectangle) {
 * @param {Object} event fired when click performed.
 */
 MAORI.model.clickedAnyElement = function(event) {
-  var x = event.properties.x;
-  var y = event.properties.y;
-  MAORI.model.clearSelected();
+  var x = event.properties.point.x;
+  var y = event.properties.point.y;
+  //Apply multi select
+  if (!event.ctrlKey) {
+    MAORI.model.clearSelected();
+  }
   var drawableSize = MAORI.model.drawables.length;
-  //here I should ask if ctrl was pressed
-  // in order to apply multi select
-  MAORI.model.clearSelected();
   for (var i = 0; i < drawableSize; i++) {
     var drawable = MAORI.model.drawables[i];
     if (drawable.isTouched(x, y)) {
@@ -517,6 +548,7 @@ MAORI.model.clickedAnyElement = function(event) {
 *
 */
 MAORI.model.clearSelected = function() {
+  MAORI.model.selected = [];
   var drawableSize = MAORI.model.drawables.length;
   for (var i = 0; i < drawableSize; i++) {
     var drawable = MAORI.model.drawables[i];
@@ -568,7 +600,8 @@ MAORI.model._createFile = function(x, y, f) {
 MAORI.model.createText = function(event) {
   var x = event.properties.point.x;
   var y = event.properties.point.y;
-  var textString = event.properties.text;
+  var data = event.dataTransfer.getData('text');
+  var textString = data;
   MAORI.model._createText(x, y, textString);
 };
 
@@ -609,11 +642,63 @@ MAORI.model.checkForAnimation = function() {
 
 
 /**
+* function called when drag starts
+* @param {Event} event mouseDown.
+*/
+MAORI.model.dragStart = function(event) {
+  var x = event.properties.point.x;
+  var y = event.properties.point.y;
+  var drawableSize = MAORI.model.drawables.length;
+  MAORI.model.dragState = true;
+  for (var i = 0; i < drawableSize; i++) {
+    var drawable = MAORI.model.drawables[i];
+    if (drawable.isTouched(x, y)) {
+      MAORI.model.dragDrawables.push(drawable);
+    }
+  }
+};
+
+
+/**
+* function called when drag stops.
+* @param {Event} event mouseUp.
+*/
+MAORI.model.dragStop = function(event) {
+  for(var i = 0; i < MAORI.model.dragDrawables.length; i++) {
+      var drawable = MAORI.model.dragDrawables[i];
+      drawable.x = event.properties.point.x;
+      drawable.y = event.properties.point.y;
+      MAORI.event.fireEvent(MAORI.event.repaint, document, null);
+    }
+};
+
+
+/**
+* Function called on meaningful mouse Move.
+* @param {Event} event mouseMove.
+*/
+MAORI.model.mouseMove = function(event) {
+  if (MAORI.model.dragDrawables.length > 0) {
+    //dragging drawables
+    for(var i = 0; i < MAORI.model.dragDrawables.length; i++) {
+      var drawable = MAORI.model.dragDrawables[i];
+      drawable.x = event.properties.point.x;
+      drawable.y = event.properties.point.y;
+      MAORI.event.fireEvent(MAORI.event.repaint, document, null);
+    }
+  }else{
+    //moving display reging
+    //TODO: Lot of code to do here...
+  }
+};
+
+/**
 * Initializes model module
 * @this {Module}
 */
 MAORI.model.init = function() {
-  document.addEventListener(MAORI.event.clicked, this.clickedAnyElement, false);
-  document.addEventListener(MAORI.event.fileDropped, this.createFile, false);
-  document.addEventListener(MAORI.event.textDropped, this.createText, false);
+  var canvas = document.getElementById('canvasZone');
+  MAORI.model.canvasSize = {x: canvas.width, y: canvas.heigth};
+  //initial coordenates
+  MAORI.model.displaying = {x1: 0, x2: canvas.width, y1: 0, y2: canvas.heigth};
 };

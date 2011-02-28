@@ -35,7 +35,16 @@ MAORI.event = {fileDropped: 'fileDropped',
   paint: 'paint',
   repaint: 'repaint',
   animate: 'animate',
-  stopAnimation: 'stopAnimation'};
+  stopAnimation: 'stopAnimation',
+  dragStart: 'dragStart',
+  dragStop: 'dragStop',
+  mouseMove: 'mouseMove'};
+
+
+/**
+* Indicates is the mouse is pressed
+*/
+MAORI.event.mousePressedState = false;
 
 
 /**
@@ -75,11 +84,12 @@ MAORI.event.cancelDefaultOperation = function(event) {
 
 /**
 * Click event Handler
-* @param {Object} event fired.
+* @param {Event} event fired.
 */
 MAORI.event.simpleClick = function(event) {
-  MAORI.event.fireEvent(MAORI.event.clicked, document,
-                        MAORI.event.getEventXY(event));
+  var properties = {point: MAORI.event.getEventXY(event)};
+  event.properties = properties;
+  MAORI.model.clickedAnyElement(event);
 };
 
 
@@ -97,7 +107,7 @@ MAORI.event.keyDown = function(event) {
 
 
 /**
-* mouse event Handler. the param is not class but
+* mouse event Handler.
 * @param {Event} ev eventRespose.
 * @return {Point} point where the event occurred.
 */
@@ -153,9 +163,9 @@ MAORI.event.objectDropped = function(event) {
 * @param {Event} event onDrop.
 */
 MAORI.event.textDragged = function(event) {
-  var data = event.dataTransfer.getData('text');
-  propertyToAdd = {text: data, point: MAORI.event.getEventXY(event)};
-  MAORI.event.fireEvent(MAORI.event.textDropped, document, propertyToAdd);
+  var propertyToAdd = {point: MAORI.event.getEventXY(event)};
+  event.properties = propertyToAdd;
+  MAORI.model.createText(event)
 };
 
 
@@ -173,7 +183,8 @@ MAORI.event.fileDragged = function(event) {
                           point: MAORI.event.getEventXY(event)};
     //hack: only to avoid putting all in the same pixel
     propertyToAdd.point.x += 30 * i;
-    MAORI.event.fireEvent(MAORI.event.fileDropped, document, propertyToAdd);
+    event.properties = propertyToAdd;
+    MAORI.model.createFile(event);
   }
   /*
   var data = event.dataTransfer;
@@ -239,4 +250,41 @@ MAORI.event.fileDragged = function(event) {
 +  (new Date).getTime());
   };
   */
+};
+
+
+/**
+* fires dragStop event
+* @param {Event} event onMouseDown.
+*/
+MAORI.event.onDragDrawable = function(event) {
+  var propertyToAdd = {point: MAORI.event.getEventXY(event)};
+  event.properties = propertyToAdd;
+  MAORI.model.dragStart(event);
+};
+
+
+/**
+* fires dragStart event
+* @param {Event} event onMouseUp.
+*/
+MAORI.event.onDropDrawable = function(event) {
+  var propertyToAdd = {point: MAORI.event.getEventXY(event)};
+  event.properties = propertyToAdd;
+  MAORI.model.dragStop(event);
+};
+
+
+/**
+* Track mouse movement and decides wether the
+* event is meaningfull or not. If it is fires
+* an mouseMove event.
+* @param {Event} event onMouseOver.
+*/
+MAORI.event.onMouseOver = function(event) {
+  if (MAORI.event.mousePressedState) {
+    var propertyToAdd = {point: MAORI.event.getEventXY(event)};
+    event.properties = propertyToAdd;
+    MAORI.model.mouseMove(event);
+  }
 };
