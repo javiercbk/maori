@@ -55,6 +55,7 @@ MAORI.general.getPosition = function(elementId) {
 */
 MAORI.general.init = function() {
   MAORI.general.drawingCanvas = document.getElementsByTagName('canvas')[0];
+  MAORI.general.drawingCanvas.mousemove = MAORI.event.onMouseMove;
   MAORI.general.drawingCanvas.ondrop = MAORI.event.objectDropped;
   MAORI.general.drawingCanvas.ondragover = MAORI.event.cancelDefaultOperation;
   MAORI.general.drawingCanvas.ondragenter = MAORI.event.cancelDefaultOperation;

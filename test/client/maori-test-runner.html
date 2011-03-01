@@ -17,13 +17,15 @@
   <script type="text/javascript" src="../../src/client/model.js"></script>
   
   <!-- include test files here... -->
-  <script type="text/javascript" src="maori-test.js"></script>
+  <script type="text/javascript" src="test-helper.js"></script>
+  <script type="text/javascript" src="maori-test.js"></script>  
   <script type="text/javascript" src="strict-test.js"></script>
 </head>
 
 <body onload="(function () {
               document.getElementById('__jasmine_TrivialReporter_showPassed__').click();
               document.getElementById('__jasmine_TrivialReporter_showSkipped__').click();
+              MAORI.general.init();
               }());">
 <script type="text/javascript">
   jasmine.getEnv().addReporter(new jasmine.TrivialReporter());
@@ -51,7 +53,7 @@
   })();
 </script>
 -->
-<canvas class="myCanvas" width="795px" height="500px" onclick="MAORI.event.onClickCanvas(event)">
+<canvas id="testCanvas" class="myCanvas" width="795px" height="500px" type="hidden">
 <p>Your browser doesn't support canvas.</p>
 </canvas>
 </body>

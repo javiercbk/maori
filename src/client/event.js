@@ -258,6 +258,8 @@ MAORI.event.fileDragged = function(event) {
 * @param {Event} event onMouseDown.
 */
 MAORI.event.onDragDrawable = function(event) {
+  MAORI.event.cancelDefaultOperation(event);
+  MAORI.event.mousePressedState = true;
   var propertyToAdd = {point: MAORI.event.getEventXY(event)};
   event.properties = propertyToAdd;
   MAORI.model.dragStart(event);
@@ -269,6 +271,8 @@ MAORI.event.onDragDrawable = function(event) {
 * @param {Event} event onMouseUp.
 */
 MAORI.event.onDropDrawable = function(event) {
+  MAORI.event.cancelDefaultOperation(event);
+  MAORI.event.mousePressedState = false;
   var propertyToAdd = {point: MAORI.event.getEventXY(event)};
   event.properties = propertyToAdd;
   MAORI.model.dragStop(event);
@@ -281,7 +285,8 @@ MAORI.event.onDropDrawable = function(event) {
 * an mouseMove event.
 * @param {Event} event onMouseOver.
 */
-MAORI.event.onMouseOver = function(event) {
+MAORI.event.onMouseMove = function(event) {
+  MAORI.event.cancelDefaultOperation(event);
   if (MAORI.event.mousePressedState) {
     var propertyToAdd = {point: MAORI.event.getEventXY(event)};
     event.properties = propertyToAdd;
