@@ -106,8 +106,7 @@ MAORI.model.Drawable = function(x, y) {
     this.x = moveToX;
     this.y = moveToY;
     if(this.decorator != null){
-      this.decorator.x = moveToX;
-      this.decorator.y = moveToY;
+      this.decorator.move(moveToX, moveToY)
     }
   }
   this.decorator = null;
@@ -236,7 +235,7 @@ MAORI.model.File = function(x, y, imagesrc, file, ctx) {
   this.move = function(moveToX, moveToY) {
     this.text.move(moveToX + xOffset, moveToY + yOffset);
     this.__proto__.move.apply(this,[moveToX, moveToY]);
-  }
+  };
 
   this.draw = function() {
     //it would be better if drawImage
@@ -316,6 +315,10 @@ MAORI.model.Text = function(x, y, text, ctx) {
     var rectangle = this.getRectangle();
     return ((x < rectangle.x2 && x > rectangle.x1) &&
             (y < rectangle.y2 && y > rectangle.y1));
+  };
+
+  this.move = function(moveToX, moveToY) {
+    this.__proto__.move.apply(this,[moveToX, moveToY]);
   };
 };
 
@@ -401,6 +404,15 @@ MAORI.model.BoxDecorator = function(rectangle, ctx) {
     ctx.lineTo(this.x - offset, this.y - offset);
     ctx.strokeStyle = '#E1D514';
     ctx.stroke();
+  };
+
+  this.move = function(moveToX, moveToY) {
+    var width = this.x2 - this.x;
+    var height = this.y2 - this.y;
+    this.x = moveToX;
+    this.y = moveToY - height;
+    this.x2 = width + moveToX;
+    this.y2 = moveToY;
   };
 };
 
