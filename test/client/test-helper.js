@@ -9,15 +9,16 @@ TEST = {};
 
 /**
 * Creates a test MouseEvent
-* @param {Integer} x position of the event.
-* @param {Integer} y position of the event.
+* @param {Integer} testX position of the event.
+* @param {Integer} testY position of the event.
 * @param {String} type of the event.
 * @return {Event} mockup event.
 */
 TEST.createMouseEvent = function(testX, testY, type) {
   var mockupEvent = document.createEvent('MouseEvents');
   mockupEvent.initMouseEvent(type, true, true, document.defaultView,
-          1, testX, testY, 0, 0, false, false, false, false, 0, null);
+                             1, testX, testY, 0, 0, false, false,
+                             false, false, 0, null);
   mockupEvent.properties = {point: {x: testX, y: testY}};
   return mockupEvent;
 };

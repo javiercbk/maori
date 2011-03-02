@@ -48,6 +48,19 @@ MAORI.event.mousePressedState = false;
 
 
 /**
+* Timeout clock used to know if the user
+* is performing an special action
+*/
+MAORI.event.clockId = -1;
+
+
+/**
+* Indicates where the mouse was pressed
+*/
+MAORI.event.pressedOn = {x: 0, y: 0};
+
+
+/**
 * Calculates the x and y position of an event
 * @param {Event} ev event ocurred.
 * @return {Point} point with the coordenates.
@@ -87,6 +100,8 @@ MAORI.event.cancelDefaultOperation = function(event) {
 * @param {Event} event fired.
 */
 MAORI.event.simpleClick = function(event) {
+  MAORI.event.pressedOn.x = -1;
+  MAORI.event.pressedOn.y = -1;
   var properties = {point: MAORI.event.getEventXY(event)};
   event.properties = properties;
   MAORI.model.clickedAnyElement(event);
@@ -165,7 +180,7 @@ MAORI.event.objectDropped = function(event) {
 MAORI.event.textDragged = function(event) {
   var propertyToAdd = {point: MAORI.event.getEventXY(event)};
   event.properties = propertyToAdd;
-  MAORI.model.createText(event)
+  MAORI.model.createText(event);
 };
 
 
@@ -254,26 +269,48 @@ MAORI.event.fileDragged = function(event) {
 
 
 /**
-* fires dragStop event
+* Called when drag started and fires a dragStarted event
+* to start a clock and verifies if user is performing a
+* special action.
 * @param {Event} event onMouseDown.
 */
 MAORI.event.onDragDrawable = function(event) {
   MAORI.event.cancelDefaultOperation(event);
   MAORI.event.mousePressedState = true;
   var propertyToAdd = {point: MAORI.event.getEventXY(event)};
+  MAORI.event.pressedOn.x = propertyToAdd.point.x;
+  MAORI.event.pressedOn.y = propertyToAdd.point.y;
   event.properties = propertyToAdd;
+  event.properties.callback = new MAORI.event.specialOperationCallback(event);
+  MAORI.event.fireEvent(MAORI.event.dragStart, document, event.properties);
   MAORI.model.dragStart(event);
 };
 
 
 /**
-* fires dragStart event
+* Called when drag stopped
 * @param {Event} event onMouseUp.
 */
 MAORI.event.onDropDrawable = function(event) {
+  if (!MAORI.event.mousePressedState) {
+    //FIXME: this is a hack to determine
+    //if special action was executed.
+    //it should remove the event temporary
+    return;
+  }
   MAORI.event.cancelDefaultOperation(event);
-  MAORI.event.mousePressedState = false;
+  //forces timeout clear
+  clearTimeout(MAORI.event.clockId);
   var propertyToAdd = {point: MAORI.event.getEventXY(event)};
+  MAORI.event.mousePressedState = false;
+  if (MAORI.event.pressedOn.x === propertyToAdd.point.x &&
+      MAORI.event.pressedOn.y === propertyToAdd.point.y) {
+    //it was a click
+    MAORI.event.simpleClick(event);
+    return;
+  }
+  MAORI.event.pressedOn.x = -1;
+  MAORI.event.pressedOn.y = -1;
   event.properties = propertyToAdd;
   MAORI.model.dragStop(event);
 };
@@ -287,9 +324,48 @@ MAORI.event.onDropDrawable = function(event) {
 */
 MAORI.event.onMouseMove = function(event) {
   MAORI.event.cancelDefaultOperation(event);
+  //forces timeout clear
+  clearTimeout(MAORI.event.clockId);
   if (MAORI.event.mousePressedState) {
     var propertyToAdd = {point: MAORI.event.getEventXY(event)};
     event.properties = propertyToAdd;
     MAORI.model.mouseMove(event);
   }
+};
+
+
+/**
+* Starts a timer in order to check for edition,
+* if timeot suceeds it call its  callback.
+* @param {Event} event in this case dragStart.
+*/
+MAORI.event.checkForEdition = function(event) {
+  var callbackPerform = function() {
+    event.properties.callback.performCallback();
+  };
+  //2 seconds
+  MAORI.event.clockId = setTimeout(callbackPerform, 2000);
+};
+
+
+/**
+* Callback special operation over a xy coordenate
+* @param {Event} event to be appended.
+* @this
+*/
+MAORI.event.specialOperationCallback = function(event) {
+  this.event = event;
+
+  this.performCallback = function() {
+    MAORI.model.specialOperation(this.event);
+  };
+};
+
+
+/**
+* Event module initializer
+*/
+MAORI.event.init = function() {
+  document.addEventListener(MAORI.event.dragStart,
+                            MAORI.event.checkForEdition, false);
 };

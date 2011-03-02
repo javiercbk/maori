@@ -8,6 +8,7 @@ $V8_SHELL \
     $PRJ_ROOT/tools/spec-runner-prolog.js \
     $PRJ_ROOT/lib/jasmine-1.0.1/jasmine.js \
     $PRJ_ROOT/src/client/general.js \
+    $PRJ_ROOT/src/client/helper.js \
     $PRJ_ROOT/src/client/model.js \
     $PRJ_ROOT/src/client/event.js \
     $PRJ_ROOT/src/client/draw.js \

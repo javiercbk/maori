@@ -105,8 +105,8 @@ MAORI.model.Drawable = function(x, y) {
   this.move = function(moveToX, moveToY) {
     this.x = moveToX;
     this.y = moveToY;
-    if(this.decorator != null){
-      this.decorator.move(moveToX, moveToY)
+    if (this.decorator != null) {
+      this.decorator.move(moveToX, moveToY);
     }
   }
   this.decorator = null;
@@ -180,6 +180,10 @@ MAORI.model.Raindrop = function(x, y, color, ctx) {
     }
   };
 
+  this.move = function(moveToX, moveToY) {
+    this.__proto__.move.apply(this, [moveToX, moveToY]);
+  };
+
   this.isNonVisible = function() {
     return currentAlpha <= 0.00;
   };
@@ -234,7 +238,7 @@ MAORI.model.File = function(x, y, imagesrc, file, ctx) {
 
   this.move = function(moveToX, moveToY) {
     this.text.move(moveToX + xOffset, moveToY + yOffset);
-    this.__proto__.move.apply(this,[moveToX, moveToY]);
+    this.__proto__.move.apply(this, [moveToX, moveToY]);
   };
 
   this.draw = function() {
@@ -318,7 +322,7 @@ MAORI.model.Text = function(x, y, text, ctx) {
   };
 
   this.move = function(moveToX, moveToY) {
-    this.__proto__.move.apply(this,[moveToX, moveToY]);
+    this.__proto__.move.apply(this, [moveToX, moveToY]);
   };
 };
 
@@ -432,6 +436,59 @@ MAORI.model.BoxDecorator.constructor = MAORI.model.BoxDecorator;
 
 /**
 * @constructor
+* @param {Object} rectangle to be decorated.
+* @param {Object} ctx 2D drawing context.
+*/
+MAORI.model.SpecialBoxDecorator = function(rectangle, ctx) {
+  this.x = rectangle.x1;
+  this.y = rectangle.y1;
+  this.x2 = rectangle.x2;
+  this.y2 = rectangle.y2;
+  this.decorator = null;
+  //5 pixel offset
+  var offset = 5;
+  var backForth = new MAORI.BackForth([1, 2, 3, 4, 5]);
+
+  this.setOffset = function(newOffset) {
+    offset = newOffset;
+  };
+
+  this.drawingContext = ctx;
+
+  this.draw = function() {
+    ctx.beginPath();
+    var currentOffset = offset + backForth.next();
+    ctx.moveTo(this.x - currentOffset, this.y - currentOffset);
+    ctx.lineTo(this.x2 + currentOffset, this.y - currentOffset);
+    ctx.lineTo(this.x2 + currentOffset, this.y2 + currentOffset);
+    ctx.lineTo(this.x - currentOffset, this.y2 + currentOffset);
+    ctx.lineTo(this.x - currentOffset, this.y - currentOffset);
+    ctx.strokeStyle = '#E1D514';
+    ctx.stroke();
+  };
+
+  this.move = function(moveToX, moveToY) {
+    this.__proto__.move.apply(this, [moveToX, moveToY]);
+  };
+};
+
+
+/**
+* Sets up the BoxDecorator prototype
+*/
+MAORI.model.SpecialBoxDecorator.prototype =
+    new MAORI.model.BoxDecorator({x1: 0, y1: 0, x2: 0, y2: 0});
+
+
+/**
+* Sets up the BoxDecorator constructor
+*/
+MAORI.model.SpecialBoxDecorator.constructor = MAORI.model.SpecialBoxDecorator;
+
+
+
+/**
+* @constructor
 * @param {Integer} fromX origin.
 * @param {Integer} fromY origin.
 * @param {Integer} toX destiny.
@@ -532,9 +589,7 @@ MAORI.model.removeDrawable = function(drawable) {
       }
       MAORI.model.drawables = temp;
     }
-    if (!MAORI.model.checkForAnimation()) {
-      MAORI.event.fireEvent(MAORI.event.stopAnimation, document, null);
-    }
+    MAORI.model.stopAnimation();
   }
   return drawableIndex;
 };
@@ -558,7 +613,7 @@ MAORI.model.createRaindrop = function(x, y) {
 
 /**
 * Renders a box decorator over a rectangle.
-* @param {Object} rectangle to be rendered.
+* @param {Object} drawable to be rendered.
 */
 MAORI.model.createBoxDecorator = function(drawable) {
   var rectangle = drawable.getRectangle();
@@ -570,10 +625,34 @@ MAORI.model.createBoxDecorator = function(drawable) {
 
 
 /**
-* Finds wether an element was clicked
+* Creates a special decorator around a drawable.
+* @param {Object} drawable to be decorated.
+*/
+MAORI.model.createSpecialDecorator = function(drawable) {
+  var rectangle = drawable.getRectangle();
+  var ctx = MAORI.general.drawingCanvas.getContext('2d');
+  var box = new MAORI.model.SpecialBoxDecorator(rectangle, ctx);
+  drawable.decorator = box;
+  MAORI.event.fireEvent(MAORI.event.animate, document, null);
+};
+
+
+/**
+* Calls performClick with decorate function
 * @param {Object} event fired when click performed.
 */
 MAORI.model.clickedAnyElement = function(event) {
+  MAORI.model.performClick(event, MAORI.model.decorate);
+};
+
+
+/**
+* Finds wether an element was clicked and executes
+* the given function over it.
+* @param {Object} event fired when click performed.
+* @param {Function} func to perform to drawable.
+*/
+MAORI.model.performClick = function(event, func) {
   var x = event.properties.point.x;
   var y = event.properties.point.y;
   console.log('clicked x:' + x + ' y: ' + y);
@@ -585,12 +664,31 @@ MAORI.model.clickedAnyElement = function(event) {
   for (var i = 0; i < drawableSize; i++) {
     var drawable = MAORI.model.drawables[i];
     if (drawable.isTouched(x, y)) {
-      MAORI.model.createBoxDecorator(drawable);
-      MAORI.model.selected.push(drawable);
+      func(drawable);
       //avoid keeping evaluating
       return;
     }
   }
+};
+
+
+/**
+* Decorates drawable with BoxDecorator
+* @param {Object} drawable to decorate.
+*/
+MAORI.model.decorate = function(drawable) {
+  MAORI.model.createBoxDecorator(drawable);
+  MAORI.model.selected.push(drawable);
+};
+
+
+/**
+* Decorates drawable with BoxDecorator
+* @param {Object} drawable to decorate.
+*/
+MAORI.model.specialAction = function(drawable) {
+  MAORI.model.createSpecialDecorator(drawable);
+  MAORI.model.selected.push(drawable);
 };
 
 
@@ -727,11 +825,11 @@ MAORI.model.dragStop = function(event) {
     MAORI.model.clearDragStarted();
     return;
   }
-  for(var i = 0; i < MAORI.model.dragDrawables.length; i++) {
-      var drawable = MAORI.model.dragDrawables[i];
-      drawable.x = event.properties.point.x;
-      drawable.y = event.properties.point.y;
-    }
+  for (var i = 0; i < MAORI.model.dragDrawables.length; i++) {
+    var drawable = MAORI.model.dragDrawables[i];
+    drawable.x = event.properties.point.x;
+    drawable.y = event.properties.point.y;
+  }
   MAORI.model.clearDragStarted();
   MAORI.event.fireEvent(MAORI.event.repaint, document, null);
 };
@@ -745,22 +843,24 @@ MAORI.model.mouseMove = function(event) {
   var x = event.properties.point.x;
   var y = event.properties.point.y;
   console.log('mouseMove x:' + x + ' y: ' + y);
-  console.log('dragStarted on x:' + MAORI.model.dragStartedPoint.x + ' y: ' + MAORI.model.dragStartedPoint.y);
+  console.log('dragStarted on x:' +
+              MAORI.model.dragStartedPoint.x + ' y: ' +
+              MAORI.model.dragStartedPoint.y);
   var offsetX = x - MAORI.model.dragStartedPoint.x;
   var offsetY = y - MAORI.model.dragStartedPoint.y;
   MAORI.model.dragStartedPoint.x = x;
   MAORI.model.dragStartedPoint.y = y;
   if (MAORI.model.dragDrawables) {
     //dragging drawables
-    for(var i = 0; i < MAORI.model.selected.length; i++) {
+    for (var i = 0; i < MAORI.model.selected.length; i++) {
       var drawable = MAORI.model.selected[i];
       var newX = drawable.x + offsetX;
       var newY = drawable.y + offsetY;
       drawable.move(newX, newY);
     }
-  }else{
+  } else {
     //moving display region
-    for(var i = 0; i < MAORI.model.drawables.length; i++) {
+    for (var i = 0; i < MAORI.model.drawables.length; i++) {
       var drawable = MAORI.model.drawables[i];
       var newX = drawable.x + offsetX;
       var newY = drawable.y + offsetY;
@@ -771,6 +871,7 @@ MAORI.model.mouseMove = function(event) {
   }
   MAORI.event.fireEvent(MAORI.event.repaint, document, null);
 };
+
 
 /**
 * Initializes model module
@@ -791,4 +892,24 @@ MAORI.model.clearDragStarted = function() {
   MAORI.model.dragStartedPoint.x = -1;
   MAORI.model.dragStartedPoint.y = -1;
   MAORI.model.dragDrawables = false;
+};
+
+
+/**
+* Performs an special operation
+* @param {Event} event with properties.
+*/
+MAORI.model.specialOperation = function(event) {
+  MAORI.model.performClick(event, MAORI.model.specialAction);
+};
+
+
+/**
+* Stops animation by firing an event. If no animation
+* is being displayed, it will do nothing.
+*/
+MAORI.model.stopAnimation = function() {
+  if (!MAORI.model.checkForAnimation()) {
+    MAORI.event.fireEvent(MAORI.event.stopAnimation, document, null);
+  }
 };

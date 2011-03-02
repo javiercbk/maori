@@ -60,5 +60,6 @@ MAORI.general.init = function() {
   MAORI.general.drawingCanvas.ondragover = MAORI.event.cancelDefaultOperation;
   MAORI.general.drawingCanvas.ondragenter = MAORI.event.cancelDefaultOperation;
   MAORI.draw.init();
+  MAORI.event.init();
   MAORI.model.init();
 };

@@ -42,7 +42,8 @@ describe('Event Module Test', function() {
       //Simulates a click from canvas
       MAORI.event.simpleClick(this.mockupEvent);
       expect(MAORI.event.getEventXY).toHaveBeenCalledWith(this.mockupEvent);
-      expect(MAORI.model.clickedAnyElement).toHaveBeenCalledWith(this.mockupEvent);
+      expect(MAORI.model.clickedAnyElement).
+          toHaveBeenCalledWith(this.mockupEvent);
     });
   });
 
@@ -65,7 +66,7 @@ describe('Event Module Test', function() {
 });
 
 describe('Model Module Test', function() {
-  
+
   beforeEach(function() {
     //clear maori model completely
     MAORI.model.drawables = [];
@@ -74,7 +75,7 @@ describe('Model Module Test', function() {
     MAORI.model.dragState = false;
     MAORI.model.dragDrawables = false;
   });
-  
+
   it('on file creation it should create 2 drawable objects', function() {
     var mockupFile = {name: 'testFileName.test'};
     MAORI.model._createFile(50, 50, mockupFile);
@@ -92,7 +93,7 @@ describe('Model Module Test', function() {
   it('on file selection it should create 2 drawable objects', function() {
     runs(function() {
       //ensure click inside
-      this.mockupEvent = TEST.createClick(55,55);
+      this.mockupEvent = TEST.createClick(55, 55);
       var mockupFile = {name: 'testFileName.test'};
       MAORI.model._createFile(50, 50, mockupFile);
       MAORI.model.clickedAnyElement(this.mockupEvent);
@@ -127,13 +128,13 @@ describe('Model Module Test', function() {
     waits(2000);
   });
   runs(function() {
-      expect(MAORI.model.drawables.length).toBe(1);
-      this.mockupEvent = TEST.createClick(1, 1);
-      MAORI.model.clickedAnyElement(this.mockupEvent);
-      //1 text
-      expect(MAORI.model.drawables.length).toBe(1);
-      //decorator should be null because text was unselected
-      expect(MAORI.model.drawables[0].decorator).toBeNull();
+    expect(MAORI.model.drawables.length).toBe(1);
+    this.mockupEvent = TEST.createClick(1, 1);
+    MAORI.model.clickedAnyElement(this.mockupEvent);
+    //1 text
+    expect(MAORI.model.drawables.length).toBe(1);
+    //decorator should be null because text was unselected
+    expect(MAORI.model.drawables[0].decorator).toBeNull();
   });
 
   it('on file drag it should change the position of the file', function() {
@@ -151,9 +152,9 @@ describe('Model Module Test', function() {
       //generates 10 random movements
       var randomX = 0;
       var randomY = 0;
-      for(var i = 0; i < 10; i++){
-        randomX = Math.floor(Math.random()*110);
-        randomY = Math.floor(Math.random()*110);
+      for (var i = 0; i < 10; i++) {
+        randomX = Math.floor(Math.random() * 110);
+        randomY = Math.floor(Math.random() * 110);
         mockupEvent = TEST.createMouseMove(randomX, randomY);
         MAORI.model.mouseMove(mockupEvent);
         expect(MAORI.model.drawables[0].x).toBe(50 + (randomX - 55));
@@ -181,9 +182,9 @@ describe('Model Module Test', function() {
       //generates 10 random movements
       var randomX = 0;
       var randomY = 0;
-      for(var i = 0; i < 10; i++){
-        randomX = Math.floor(Math.random()*110);
-        randomY = Math.floor(Math.random()*110);
+      for (var i = 0; i < 10; i++) {
+        randomX = Math.floor(Math.random() * 110);
+        randomY = Math.floor(Math.random() * 110);
         mockupEvent = TEST.createMouseMove(randomX, randomY);
         MAORI.model.mouseMove(mockupEvent);
         expect(MAORI.model.drawables[0].x).toBe(50 + (randomX - 55));
@@ -196,46 +197,47 @@ describe('Model Module Test', function() {
     });
   });
 
-  it('on display drag it should change the position of the elements', function() {
-    runs(function() {
-      var mockupEvent = TEST.createClick(10, 15);
-      //ensure click inside
-      var mockupText = 'testText';
-      MAORI.model._createText(50, 50, mockupText);
-      MAORI.model._createFile(120, 40, mockupText);
-      MAORI.model.clickedAnyElement(mockupEvent);
-      expect(MAORI.model.drawables[0].x).toBe(50);
-      expect(MAORI.model.drawables[0].y).toBe(50);
-      //[File, Raindrop, Text, Raindrop] that's why
-      //I use the third element
-      expect(MAORI.model.drawables[2].x).toBe(120);
-      expect(MAORI.model.drawables[2].y).toBe(40);
-      //starts drag
-      mockupEvent = TEST.createMouseDown(10, 15);
-      MAORI.model.dragStart(mockupEvent);
-      //generates 10 random movements
-      var randomX = 0;
-      var randomY = 0;
-      for(var i = 0; i < 10; i++){
-        randomX = Math.floor(Math.random()*110);
-        randomY = Math.floor(Math.random()*110);
-        mockupEvent = TEST.createMouseMove(randomX, randomY);
-        MAORI.model.mouseMove(mockupEvent);
-        expect(MAORI.model.drawables[0].x).toBe(50 + (randomX - 10));
-        expect(MAORI.model.drawables[0].y).toBe(50 + (randomY - 15));
-        expect(MAORI.model.drawables[2].x).toBe(120 + (randomX - 10));
-        expect(MAORI.model.drawables[2].y).toBe(40 + (randomY - 15));
-        expect(MAORI.model.displaying.x).toBe(randomX - 10);
-        expect(MAORI.model.displaying.y).toBe(randomY - 15);
-      }
-      mockupEvent = TEST.createMouseUp(randomX, randomY);
-      MAORI.model.dragStop(mockupEvent);
-      expect(MAORI.model.drawables[0].x).toBe(50 + (randomX - 10));
-      expect(MAORI.model.drawables[0].y).toBe(50 + (randomY - 15));
-      expect(MAORI.model.drawables[2].x).toBe(120 + (randomX - 10));
-      expect(MAORI.model.drawables[2].y).toBe(40 + (randomY - 15));
-      expect(MAORI.model.displaying.x).toBe(randomX - 10);
-      expect(MAORI.model.displaying.y).toBe(randomY - 15);
-    });
-  });
+  it('on display drag it should change the position of the elements',
+     function() {
+       runs(function() {
+         var mockupEvent = TEST.createClick(10, 15);
+         //ensure click inside
+         var mockupText = 'testText';
+         MAORI.model._createText(50, 50, mockupText);
+         MAORI.model._createFile(120, 40, mockupText);
+         MAORI.model.clickedAnyElement(mockupEvent);
+         expect(MAORI.model.drawables[0].x).toBe(50);
+         expect(MAORI.model.drawables[0].y).toBe(50);
+         //[File, Raindrop, Text, Raindrop] that's why
+         //I use the third element
+         expect(MAORI.model.drawables[2].x).toBe(120);
+         expect(MAORI.model.drawables[2].y).toBe(40);
+         //starts drag
+         mockupEvent = TEST.createMouseDown(10, 15);
+         MAORI.model.dragStart(mockupEvent);
+         //generates 10 random movements
+         var randomX = 0;
+         var randomY = 0;
+         for (var i = 0; i < 10; i++) {
+           randomX = Math.floor(Math.random() * 110);
+           randomY = Math.floor(Math.random() * 110);
+           mockupEvent = TEST.createMouseMove(randomX, randomY);
+           MAORI.model.mouseMove(mockupEvent);
+           expect(MAORI.model.drawables[0].x).toBe(50 + (randomX - 10));
+           expect(MAORI.model.drawables[0].y).toBe(50 + (randomY - 15));
+           expect(MAORI.model.drawables[2].x).toBe(120 + (randomX - 10));
+           expect(MAORI.model.drawables[2].y).toBe(40 + (randomY - 15));
+           expect(MAORI.model.displaying.x).toBe(randomX - 10);
+           expect(MAORI.model.displaying.y).toBe(randomY - 15);
+         }
+         mockupEvent = TEST.createMouseUp(randomX, randomY);
+         MAORI.model.dragStop(mockupEvent);
+         expect(MAORI.model.drawables[0].x).toBe(50 + (randomX - 10));
+         expect(MAORI.model.drawables[0].y).toBe(50 + (randomY - 15));
+         expect(MAORI.model.drawables[2].x).toBe(120 + (randomX - 10));
+         expect(MAORI.model.drawables[2].y).toBe(40 + (randomY - 15));
+         expect(MAORI.model.displaying.x).toBe(randomX - 10);
+         expect(MAORI.model.displaying.y).toBe(randomY - 15);
+       });
+     });
 });
