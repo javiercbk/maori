@@ -1,6 +1,5 @@
 'use strict';
 
-
 describe('General Object Creation', function() {
   it('MAORI namespace should be created', function() {
     expect(MAORI).toBeDefined();
@@ -63,6 +62,21 @@ describe('Event Module Test', function() {
       //expect(MAORI.event.textDragged).toHaveBeenCalledWith(this.mockupEvent);
     });
   });
+
+  /*
+  it('on mouseDown after 2 seconds should call special action ',
+     function() {
+       runs(function() {
+         this.mockupEvent = TEST.createMouseDown(51, 51);
+         MAORI.event.onDragDrawable(this.mockupEvent);
+           spyOn(MAORI.event, 'checkForEdition').andCallFake(function() {});
+       });
+       waits(4000);
+       runs(function(){
+         expect(MAORI.event.checkForEdition).toHaveBeenCalledWith(this.mockupEvent);
+       });
+     });
+  */
 });
 
 describe('Model Module Test', function() {

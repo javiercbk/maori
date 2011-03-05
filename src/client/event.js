@@ -38,13 +38,22 @@ MAORI.event = {fileDropped: 'fileDropped',
   stopAnimation: 'stopAnimation',
   dragStart: 'dragStart',
   dragStop: 'dragStop',
-  mouseMove: 'mouseMove'};
+  mouseMove: 'mouseMove',
+  enableKeys: 'enableKeys',
+  disableKeys: 'disableKeys',
+  showTextInput: 'showTextInput'};
 
 
 /**
-* Indicates is the mouse is pressed
+* Indicates if the mouse is pressed
 */
 MAORI.event.mousePressedState = false;
+
+
+/**
+* Indicates if special operation was performed
+*/
+MAORI.event.specialPerformed = false;
 
 
 /**
@@ -303,6 +312,12 @@ MAORI.event.onDropDrawable = function(event) {
   clearTimeout(MAORI.event.clockId);
   var propertyToAdd = {point: MAORI.event.getEventXY(event)};
   MAORI.event.mousePressedState = false;
+  //if special operation was performed
+  //avoid method being called
+  if (MAORI.event.specialPerformed) {
+    MAORI.event.specialPerformed = false;
+    return;
+  }
   if (MAORI.event.pressedOn.x === propertyToAdd.point.x &&
       MAORI.event.pressedOn.y === propertyToAdd.point.y) {
     //it was a click
@@ -357,8 +372,63 @@ MAORI.event.specialOperationCallback = function(event) {
   this.event = event;
 
   this.performCallback = function() {
+    MAORI.event.specialPerformed = true;
     MAORI.model.specialOperation(this.event);
   };
+};
+
+
+/**
+* Executed when onKeyUp event is fired.
+* @param {Event} event KeyUp.
+*/
+MAORI.event.onKeyUp = function(event) {
+  var unicode = event.keyCode ? event.keyCode : event.charCode;
+  var actualKey = String.fromCharCode(unicode);
+  //console.log('KeyUpEvent -> key pressed: '+ actualKey);
+};
+
+
+/**
+* Executed when onKeyDown event is fired.
+* @param {Event} event KeyDown.
+*/
+MAORI.event.onKeyDown = function(event) {
+  var unicode = event.keyCode ? event.keyCode : event.charCode;
+  var actualKey = String.fromCharCode(unicode);
+  if (event.altKey) {
+    actualKey = 'alt + ' + actualKey;
+  }
+  if (event.ctrlKey) {
+    actualKey = 'ctrl + ' + actualKey;
+  }
+  if (event.shiftKey) {
+    actualKey = 'shift + ' + actualKey;
+  }
+  //Enter Key
+  if (unicode = 13) {
+
+  }
+  //console.log('KeyDownEvent -> key pressed: '
+  //+ actualKey + ' unicode: ' + unicode);
+};
+
+
+/**
+* Enables Key event handling
+*/
+MAORI.event.enableKeyEvent = function() {
+  document.onkeyup = MAORI.event.onKeyUp;
+  document.onkeydown = MAORI.event.onKeyDown;
+};
+
+
+/**
+* Disables Key event handling
+*/
+MAORI.event.disableKeyEvent = function() {
+  document.onkeyup = null;
+  document.onkeydown = null;
 };
 
 
@@ -368,4 +438,10 @@ MAORI.event.specialOperationCallback = function(event) {
 MAORI.event.init = function() {
   document.addEventListener(MAORI.event.dragStart,
                             MAORI.event.checkForEdition, false);
+  document.addEventListener(MAORI.event.disableKeys,
+                            MAORI.event.disableKeyEvent, false);
+  document.addEventListener(MAORI.event.enableKeys,
+                            MAORI.event.enableKeyEvent, false);
+  //By default Key Events are enabled
+  MAORI.event.enableKeyEvent();
 };

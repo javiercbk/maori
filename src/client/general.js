@@ -51,6 +51,22 @@ MAORI.general.getPosition = function(elementId) {
 
 
 /**
+* Show a text input on inputHelper div
+* @param {Event} event showTextInput.
+*/
+MAORI.general.showTextInput = function(event) {
+  var eventCreator = event.properties.calledBy;
+  var inputHelperDiv = document.getElementBydId('inputHelper');
+  var textInput = document.createElement('input');
+  input.setAttribute('type', 'text');
+  var buttonInput = document.createElement('button');
+  buttonInput.onclick = eventCreator.workCallback(textInput.value);
+  inputHelperDiv.appendChild(textInput);
+  inputHelperDiv.appendChild(buttonInput);
+};
+
+
+/**
 * Initialize MAORI client
 */
 MAORI.general.init = function() {
@@ -59,7 +75,12 @@ MAORI.general.init = function() {
   MAORI.general.drawingCanvas.ondrop = MAORI.event.objectDropped;
   MAORI.general.drawingCanvas.ondragover = MAORI.event.cancelDefaultOperation;
   MAORI.general.drawingCanvas.ondragenter = MAORI.event.cancelDefaultOperation;
+  MAORI.general.drawingCanvas.onmousedown = MAORI.event.onDragDrawable;
+  MAORI.general.drawingCanvas.onmouseup = MAORI.event.onDropDrawable;
+  MAORI.general.drawingCanvas.onmousemove = MAORI.event.onMouseMove;
   MAORI.draw.init();
   MAORI.event.init();
   MAORI.model.init();
+  document.addEventListener(MAORI.event.showTextInput,
+                            MAORI.general.showTextInput, false);
 };

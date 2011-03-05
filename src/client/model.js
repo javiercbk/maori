@@ -882,6 +882,10 @@ MAORI.model.init = function() {
   MAORI.model.canvasSize = {x: canvas.width, y: canvas.heigth};
   //initial coordenates
   MAORI.model.displaying = {x1: 0, x2: canvas.width, y1: 0, y2: canvas.heigth};
+  document.addEventListener(MAORI.event.textDropped,
+                            MAORI.model.createText, false);
+  document.addEventListener(MAORI.event.fileDropped,
+                            MAORI.model.createFile, false);
 };
 
 
