@@ -1,4 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE HTML>
 <!--
 Copyright (C) 2011  Javier Lecuona
 
@@ -26,21 +26,28 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 <script type="text/javascript" src="event.js"></script>
 <script type="text/javascript" src="helper.js"></script>
 <script type="text/javascript" src="model.js"></script>
+<script type="text/javascript" src="tools.js"></script>
+<script type="text/javascript" src="ui.js"></script>
 <title>test</title>
 </head>
 
 <body onLoad="MAORI.general.init()">
-<div id="header" class="headerZone">
-test
+<div id="header" class="header">
+Maori
 </div>
-<div id="canvasZone" class="canvasZone">
+<div id="toolbox" class="toolbox" style="top: 90px; left: -100px;">
+<input type="button" class="showButton" id="toolShower" value=">" onclick="MAORI.ui.moveElement('toolbox',{x:5, y:0}, 10)">
+</input>
+&nbsp;
+</div>
+<div id="canvasZone" class="maori-drawing">
 <canvas class="myCanvas" width="795px" height="500px">
 <p>Your browser doesn't support canvas.</p>
 </canvas>
 </div>
 <div id="inputHelper" class="inputHelper">
 </div>
-<div id="footer" class="footerZone">
+<div id="footer" class="footer">
 Another test
 </div>
 </body>

@@ -24,31 +24,29 @@ body{
  text-align: center;
 }
 
-.listZone{
-
-}
-
-.headerZone{
- width: 780px;
- height: 100px;
+.header{
+ height: 50px;
  font-family:"Arial", Times, serif; 
  font-size:40px;
  color: #C1C8EC;
  margin: 0 auto;
  margin-bottom: 5px;
  padding: 10px;
- border-bottom-color: #FFC602;
+ border-bottom-color: #03C849;
  border-bottom-style: solid;
  border-bottom-width: 2px;
  border-top-left-radius: 15px;
  border-bottom-right-radius: 15px;
- background-color: #5972F3;
+ background-color: #858585;
  text-align: center;
 }
 
-.canvasZone{
- width: 795px;
- height: 500px;
+.maori-drawing, .footer, .header{ 
+ width: 90%;
+}
+
+.maori-drawing{
+ height: 100%;
  margin: 0 auto;
  margin-top: 5px;
  margin-bottom: 5px;
@@ -60,16 +58,7 @@ body{
  text-align: left;
 }
 
-#myCanvas{
- text-align: left;
- width: 700px;
- height: 500px;
- margin: auto;
-}
-
-.footerZone{
- width: 775px;
- height: 40px;
+.footer{
  font-family:"Arial", Times, serif; 
  font-size:20px;
  color: #C1C8EC;
@@ -84,4 +73,21 @@ body{
 
 .inputHelper{
 
+}
+
+.toolbox {
+ width: 10%;
+ height: 80%;
+ background-color: #00A241;
+ border-radius: 10px;
+ border-style: solid;
+ border-color: white;
+ border-width: 2px;
+ position: absolute;x
+}
+
+.showButton{ 
+ float: right;
+ background: inherit;
+ text-shadow: 2px 2px 2px #000000; 
 }

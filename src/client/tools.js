@@ -49,7 +49,7 @@ MAORI.tools.textCreator = function() {
   this.workCallback = function(textString) {
     var targetPoint = {x: this.x, y: this.y};
     var properties = {point: targetPoint, text: textString};
-    MAORI.event.fireEvent(MAORI.event.fileDropped, document, properties);
+    MAORI.event.fireEvent(MAORI.event.textDropped, document, properties);
   };
 };
 
@@ -67,9 +67,18 @@ MAORI.tools.fileCreator = function() {
     MAORI.event.fireEvent(MAORI.event.showTextInput, document, properties);
   }
 
-  this.workCallback = function(textString) {
+  this.workCallback = function(file) {
     var targetPoint = {x: this.x, y: this.y};
-    var properties = {point: targetPoint, text: textString};
+    var properties = {point: targetPoint, data: file};
     MAORI.event.fireEvent(MAORI.event.fileDropped, document, properties);
   };
 };
+
+
+/**
+* Function executed to show tools
+*/
+MAORI.tools.showTools = function() {
+
+
+}
