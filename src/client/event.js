@@ -41,7 +41,8 @@ MAORI.event = {fileDropped: 'fileDropped',
   mouseMove: 'mouseMove',
   enableKeys: 'enableKeys',
   disableKeys: 'disableKeys',
-  showTextInput: 'showTextInput'};
+  showTextInput: 'showTextInput',
+  relateSelected: 'relateSelected'};
 
 
 /**

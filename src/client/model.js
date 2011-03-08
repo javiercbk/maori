@@ -655,7 +655,7 @@ MAORI.model.clickedAnyElement = function(event) {
 MAORI.model.performClick = function(event, func) {
   var x = event.properties.point.x;
   var y = event.properties.point.y;
-  console.log('clicked x:' + x + ' y: ' + y);
+  //console.log('clicked x:' + x + ' y: ' + y);
   //Apply multi select
   if (!event.ctrlKey) {
     MAORI.model.clearSelected();
@@ -731,7 +731,7 @@ MAORI.model.createFile = function(event) {
 */
 MAORI.model._createFile = function(x, y, f) {
   var ctx = MAORI.general.drawingCanvas.getContext('2d');
-  var file = new MAORI.model.File(x, y, 'file_icon.gif', f, ctx);
+  var file = new MAORI.model.File(x, y, 'images/file_icon.gif', f, ctx);
   var color = {r: 70, g: 213, b: 222};
   var raindrop = new MAORI.model.Raindrop(x + 7 , y + 7, color, ctx);
   MAORI.model.addDrawable(file);
@@ -796,7 +796,7 @@ MAORI.model.checkForAnimation = function() {
 MAORI.model.dragStart = function(event) {
   var x = event.properties.point.x;
   var y = event.properties.point.y;
-  console.log('dragStart x:' + x + ' y: ' + y);
+  //console.log('dragStart x:' + x + ' y: ' + y);
   MAORI.model.dragStartedPoint.x = x;
   MAORI.model.dragStartedPoint.y = y;
   var drawableSize = MAORI.model.drawables.length;
@@ -818,7 +818,7 @@ MAORI.model.dragStart = function(event) {
 MAORI.model.dragStop = function(event) {
   var x = event.properties.point.x;
   var y = event.properties.point.y;
-  console.log('dragStop x:' + x + ' y: ' + y);
+  //console.log('dragStop x:' + x + ' y: ' + y);
   if (MAORI.model.dragStartedPoint.x === x &&
       MAORI.model.dragStartedPoint.y === y) {
     //it was a click so ignore call
@@ -842,10 +842,10 @@ MAORI.model.dragStop = function(event) {
 MAORI.model.mouseMove = function(event) {
   var x = event.properties.point.x;
   var y = event.properties.point.y;
-  console.log('mouseMove x:' + x + ' y: ' + y);
-  console.log('dragStarted on x:' +
-              MAORI.model.dragStartedPoint.x + ' y: ' +
-              MAORI.model.dragStartedPoint.y);
+  //console.log('mouseMove x:' + x + ' y: ' + y);
+  //console.log('dragStarted on x:' +
+  //            MAORI.model.dragStartedPoint.x + ' y: ' +
+  //            MAORI.model.dragStartedPoint.y);
   var offsetX = x - MAORI.model.dragStartedPoint.x;
   var offsetY = y - MAORI.model.dragStartedPoint.y;
   MAORI.model.dragStartedPoint.x = x;
@@ -878,7 +878,7 @@ MAORI.model.mouseMove = function(event) {
 * @this {Module}
 */
 MAORI.model.init = function() {
-  var canvas = document.getElementById('canvasZone');
+  var canvas = document.getElementById('maori-canvas');
   MAORI.model.canvasSize = {x: canvas.width, y: canvas.heigth};
   //initial coordenates
   MAORI.model.displaying = {x1: 0, x2: canvas.width, y1: 0, y2: canvas.heigth};
@@ -886,6 +886,8 @@ MAORI.model.init = function() {
                             MAORI.model.createText, false);
   document.addEventListener(MAORI.event.fileDropped,
                             MAORI.model.createFile, false);
+  document.addEventListener(MAORI.event.relateSelected,
+                            MAORI.model.relateSelected, false);
 };
 
 
@@ -916,4 +918,28 @@ MAORI.model.stopAnimation = function() {
   if (!MAORI.model.checkForAnimation()) {
     MAORI.event.fireEvent(MAORI.event.stopAnimation, document, null);
   }
+};
+
+
+/**
+* Relates the selected Elements
+*/
+MAORI.model.relateSelected = function() {
+  for (var i = 1; i < MAORI.model.selected.length; i++) {
+    MAORI.model.relateElement(MAORI.model.selected[i - 1],
+                              MAORI.model.selected[i]);
+  }
+};
+
+
+/**
+* Relates two elements
+* @param {Object} e1 to be related with e2.
+* @param {Object} e2 to be related with e1.
+*/
+MAORI.model.relateElement = function(e1, e2) {
+  var ctx = MAORI.general.drawingCanvas.getContext('2d');
+  var line = new MAORI.model.Line(e1.x, e1.y, e2.x, e2.y, ctx);
+  MAORI.model.addDrawable(line);
+  MAORI.event.fireEvent(MAORI.event.repaint, document, null);
 };

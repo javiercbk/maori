@@ -32,6 +32,12 @@ var MAORI = MAORI || {};
 MAORI.tools = {};
 
 
+/**
+* Div element to add tools
+*/
+MAORI.tools.toolbox = {};
+
+
 
 /**
 * @constructor
@@ -75,10 +81,49 @@ MAORI.tools.fileCreator = function() {
 };
 
 
+
 /**
-* Function executed to show tools
+* @constructor
+* Relation Creator tool used to relate 
+* drawables
 */
-MAORI.tools.showTools = function() {
+MAORI.tools.relationCreator = function () {
+  this.work = function(selected) {
+    for(var i = 0; i < selected.length; i++){
 
-
+    }
+  };
 }
+
+
+/**
+* Adds a tool to the ToolBox
+*/
+MAORI.tools.addTool = function(imgPath, onClickFun) {
+  var toolImage = document.createElement("IMG");
+  toolImage.src = imgPath;
+  toolImage.onclick = onClickFun;
+  toolImage.setAttribute('class', 'tool');
+  MAORI.tools.toolbox.appendChild(toolImage);
+};
+
+
+/**
+* Adds the relate tool to the toolbox
+*/
+MAORI.tools.addRelateTool = function(){
+  var onClickFun = function(event) {
+    MAORI.event.fireEvent(MAORI.event.relateSelected, document, null);
+  }
+  MAORI.tools.addTool('images/relate-tool.png', onClickFun);
+};
+
+
+/**
+* Toolbox init function
+* @param {String} toolbox id as String.
+*/
+MAORI.tools.init = function(toolbox) {
+  MAORI.tools.toolbox = document.getElementById(toolbox);
+  MAORI.tools.addRelateTool();
+};

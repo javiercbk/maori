@@ -81,6 +81,7 @@ MAORI.general.init = function() {
   MAORI.draw.init();
   MAORI.event.init();
   MAORI.model.init();
+  MAORI.tools.init('toolbox');
   document.addEventListener(MAORI.event.showTextInput,
                             MAORI.general.showTextInput, false);
 };
