@@ -84,23 +84,25 @@ MAORI.tools.fileCreator = function() {
 
 /**
 * @constructor
-* Relation Creator tool used to relate 
+* Relation Creator tool used to relate
 * drawables
 */
-MAORI.tools.relationCreator = function () {
+MAORI.tools.relationCreator = function() {
   this.work = function(selected) {
-    for(var i = 0; i < selected.length; i++){
+    for (var i = 0; i < selected.length; i++) {
 
     }
   };
-}
+};
 
 
 /**
 * Adds a tool to the ToolBox
+* @param {String} imgPath as String.
+* @param {Function} onClickFun to be executed.
 */
 MAORI.tools.addTool = function(imgPath, onClickFun) {
-  var toolImage = document.createElement("IMG");
+  var toolImage = document.createElement('IMG');
   toolImage.src = imgPath;
   toolImage.onclick = onClickFun;
   toolImage.setAttribute('class', 'tool');
@@ -111,7 +113,7 @@ MAORI.tools.addTool = function(imgPath, onClickFun) {
 /**
 * Adds the relate tool to the toolbox
 */
-MAORI.tools.addRelateTool = function(){
+MAORI.tools.addRelateTool = function() {
   var onClickFun = function(event) {
     MAORI.event.fireEvent(MAORI.event.relateSelected, document, null);
   }
