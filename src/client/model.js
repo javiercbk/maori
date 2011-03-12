@@ -342,26 +342,33 @@ MAORI.model.Text.constructor = MAORI.model.Text;
 
 /**
 * @constructor
-* @param {Integer} fromX origin.
-* @param {Integer} fromY origin.
-* @param {Integer} toX destiny.
-* @param {Integer} toY destiny.
+* @param {Object} from drawable.
+* @param {Object} to drawable.
 * @param {Object} ctx 2D drawing context.
 */
-MAORI.model.Line = function(fromX, fromY, toX, toY, ctx) {
-  this.x1 = fromX;
-  this.y1 = fromY;
-  this.x2 = toX;
-  this.y2 = toY;
+MAORI.model.Line = function(from, to, ctx) {
+  this.from = from;
+  this.to = to;
   this.drawingContext = ctx;
   this.decorator = null;
 
   this.draw = function() {
     ctx.beginPath();
-    ctx.moveTo(this.x1, this.y1);
-    ctx.lineTo(this.x2, this.y2);
+    var line = this.calculateLine();
+    ctx.moveTo(line.x1, line.y1);
+    ctx.lineTo(line.x2, line.y2);
     ctx.strokeStyle = '#2E5CBA';
     ctx.stroke();
+  };
+
+  this.calculateLine = function() {
+    var rFrom = this.from.getRectangle();
+    var rTo = this.to.getRectangle();
+    var cx1 = (rFrom.x1 + rFrom.x2) / 2;
+    var cy1 = (rFrom.y1 + rFrom.y2) / 2;
+    var cx2 = (rTo.x1 + rTo.x2) / 2;
+    var cy2 = (rTo.y1 + rTo.y2) / 2;
+    return {x1: cx1, x2: cx2, y1: cy1, y2: cy2};
   };
 };
 
@@ -939,7 +946,7 @@ MAORI.model.relateSelected = function() {
 */
 MAORI.model.relateElement = function(e1, e2) {
   var ctx = MAORI.general.drawingCanvas.getContext('2d');
-  var line = new MAORI.model.Line(e1.x, e1.y, e2.x, e2.y, ctx);
+  var line = new MAORI.model.Line(e1, e2, ctx);
   MAORI.model.addDrawable(line);
   MAORI.event.fireEvent(MAORI.event.repaint, document, null);
 };
