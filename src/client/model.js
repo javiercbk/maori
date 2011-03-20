@@ -90,6 +90,7 @@ MAORI.model.dragStartedPoint = {x: -1, y: -1};
 * @param {Integer} y position.
 */
 MAORI.model.Drawable = function(x, y) {
+  this.composite = [];
   this.x = x;
   this.y = y;
   this.scale = 1;
@@ -98,7 +99,7 @@ MAORI.model.Drawable = function(x, y) {
   this.isTouched = function(x, y) { return false; };
   this.getRectangle = function() { return 0; };
   this.post = function() {/*Do nothing function*/};
-  this.scale = function() {/*Do nothing function*/};
+  this.scale = function(s) {/*Do nothing function*/};
   this.rotate = function(radian) {
     this.rotation = radian;
   };
@@ -142,8 +143,8 @@ MAORI.model.Circle = function(x, y, radius, color, ctx) {
     this.drawingContext.stroke();
   };
 
-  this.scale = function() {
-
+  this.scale = function(s) {
+    this.radius += scale;
   };
 };
 
@@ -178,6 +179,10 @@ MAORI.model.Raindrop = function(x, y, color, ctx) {
     if (this.isNonVisible()) {
       MAORI.model.removeDrawable(this);
     }
+  };
+
+  this.scale = function(s) {
+    currentSize += scale;
   };
 
   this.move = function(moveToX, moveToY) {
@@ -257,6 +262,14 @@ MAORI.model.File = function(x, y, imagesrc, file, ctx) {
     return ((x < rectangle.x2 && x > rectangle.x1) &&
             (y < rectangle.y2 && y > rectangle.y1));
   };
+
+  this.scale = function(s) {
+    this.text.scale(s);
+    this.image.scale(s);
+    if (this.decorator != null) {
+      this.decorator.scale(s);
+    }
+  };
 };
 
 
@@ -324,6 +337,13 @@ MAORI.model.Text = function(x, y, text, ctx) {
   this.move = function(moveToX, moveToY) {
     this.__proto__.move.apply(this, [moveToX, moveToY]);
   };
+
+  this.scale = function(s) {
+    fontSize += s;
+    if (this.decorator !== null) {
+      this.decorator.scale(s);
+    }
+  };
 };
 
 
@@ -351,6 +371,7 @@ MAORI.model.Line = function(from, to, ctx) {
   this.to = to;
   this.drawingContext = ctx;
   this.decorator = null;
+  this.thickness = 1;
 
   this.draw = function() {
     ctx.beginPath();
@@ -370,6 +391,14 @@ MAORI.model.Line = function(from, to, ctx) {
     var cy2 = (rTo.y1 + rTo.y2) / 2;
     return {x1: cx1, x2: cx2, y1: cy1, y2: cy2};
   };
+
+  this.scale = function(s) {
+    this.thickness += s;
+    if (thickness < 1) {
+      thickness = 1;
+    }
+  };
+
 };
 
 
@@ -425,6 +454,17 @@ MAORI.model.BoxDecorator = function(rectangle, ctx) {
     this.x2 = width + moveToX;
     this.y2 = moveToY;
   };
+
+  this.scale = function(s) {
+    this.x += s;
+    this.y += s + (1 * s/2);
+    this.x2 += s + (1 * s/2);
+    this.y2 += s + (1 * s/2);
+    offset += s;
+    if (this.decorator !== null) {
+      this.decorator.scale(s);
+    }
+  }
 };
 
 
@@ -477,6 +517,8 @@ MAORI.model.SpecialBoxDecorator = function(rectangle, ctx) {
   this.move = function(moveToX, moveToY) {
     this.__proto__.move.apply(this, [moveToX, moveToY]);
   };
+
+  this.scale = this.__proto__.scale;
 };
 
 
@@ -512,6 +554,8 @@ MAORI.model.Arrow = function(fromX, fromY, toX, toY, ctx) {
   this.draw = function() {
     //implement line drawing + arrow
   };
+
+  this.scale = this.__proto__.scale;
 };
 
 
@@ -547,6 +591,8 @@ MAORI.model.TwoSidedArrow = function(fromX, fromY, toX, toY, ctx) {
   this.draw = function() {
     //implement line drawing + arrow
   };
+
+  this.scale = this.__proto__.scale;
 };
 
 
@@ -948,5 +994,17 @@ MAORI.model.relateElement = function(e1, e2) {
   var ctx = MAORI.general.drawingCanvas.getContext('2d');
   var line = new MAORI.model.Line(e1, e2, ctx);
   MAORI.model.addDrawable(line);
+  MAORI.event.fireEvent(MAORI.event.repaint, document, null);
+};
+
+
+/**
+* Scales all drawables.
+* @param {Integer} s scale to apply.
+*/
+MAORI.model.scaleAll = function(s) {
+  for(var i = 0; i < MAORI.model.drawables.length; i++) {
+    MAORI.model.drawables[i].scale(s);
+  }
   MAORI.event.fireEvent(MAORI.event.repaint, document, null);
 };

@@ -33,6 +33,18 @@ MAORI.general = {};
 
 
 /**
+* Current Client Height
+*/
+MAORI.general.clientHeight = 0;
+
+
+/**
+* Current Client Width
+*/
+MAORI.general.clientWidth = 0;
+
+
+/**
 * Calculates the position of an HTML element
 * @param {Element} elementId of the element.
 * @return {Object} position of the given element
@@ -67,6 +79,41 @@ MAORI.general.showTextInput = function(event) {
 
 
 /**
+* Calculates the client Heigth and width
+*/
+MAORI.general.clientWH = function() {
+  if (typeof (window.innerWidth) == 'number') {
+    //Non-IE
+    MAORI.general.clientWidth = window.innerWidth;
+    MAORI.general.clientHeight = window.innerHeight;
+  } else if (document.documentElement && (document.documentElement.clientWidth ||
+					   document.documentElement.clientHeight )) {
+    //IE 6+ in 'standards compliant mode'
+    MAORI.general.clientWidth = document.documentElement.clientWidth;
+    MAORI.general.clientHeight = document.documentElement.clientHeight;
+  } else if (document.body && (document.body.clientWidth ||
+			       document.body.clientHeight)) {
+    //IE 4 compatible
+    MAORI.general.clientWidth = document.body.clientWidth;
+    MAORI.general.clientHeight = document.body.clientHeight;
+  }
+}
+
+
+/**
+* Calculates the proper size to each element of maori.
+* The canvas element does not get along with percentage
+* width and height so it ought to have pixel size specified.
+*/
+MAORI.general.resize = function() {
+  MAORI.general.clientWH();
+  //almost 100%
+  MAORI.general.drawingCanvas.height = MAORI.general.clientHeight - 20 - 160;
+  MAORI.general.drawingCanvas.width = (MAORI.general.clientWidth * 0.9) - 15 ;
+}
+
+
+/**
 * Initialize MAORI client
 */
 MAORI.general.init = function() {
@@ -78,10 +125,14 @@ MAORI.general.init = function() {
   MAORI.general.drawingCanvas.onmousedown = MAORI.event.onDragDrawable;
   MAORI.general.drawingCanvas.onmouseup = MAORI.event.onDropDrawable;
   MAORI.general.drawingCanvas.onmousemove = MAORI.event.onMouseMove;
+  MAORI.general.drawingCanvas.onmouse
+  window.onresize = MAORI.general.resize;
+  /* Initialization code. */
   MAORI.draw.init();
   MAORI.event.init();
   MAORI.model.init();
   MAORI.tools.init('toolbox');
+  MAORI.general.resize();
   document.addEventListener(MAORI.event.showTextInput,
                             MAORI.general.showTextInput, false);
 };

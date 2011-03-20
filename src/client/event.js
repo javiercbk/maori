@@ -434,6 +434,38 @@ MAORI.event.disableKeyEvent = function() {
 
 
 /**
+* High level handler for mouse wheel event.
+*/
+MAORI.event.handle = function(delta) {
+  console.log('scale x ' + delta);
+  MAORI.model.scaleAll(delta);
+}
+
+
+/**
+* Executed on mouse wheel movement
+* @param {Event} event fired.
+*/
+MAORI.event.wheel = function(event) {
+  var delta = 0;
+  if (!event) event = window.event;
+  if (event.wheelDelta) {
+    delta = event.wheelDelta/120; 
+    if (window.opera) delta = -delta;
+  } else if (event.detail) {
+    delta = -event.detail/3;
+  }
+  if (delta){
+    MAORI.event.handle(delta);
+  }
+  if (event.preventDefault) {
+    event.preventDefault();
+  }
+  event.returnValue = false;
+}
+
+
+/**
 * Event module initializer
 */
 MAORI.event.init = function() {
@@ -443,6 +475,10 @@ MAORI.event.init = function() {
                             MAORI.event.disableKeyEvent, false);
   document.addEventListener(MAORI.event.enableKeys,
                             MAORI.event.enableKeyEvent, false);
+  if (MAORI.general.drawingCanvas.addEventListener) {
+    MAORI.general.drawingCanvas.addEventListener('DOMMouseScroll', MAORI.event.wheel, false);
+  }  
+  MAORI.general.drawingCanvas.onmousewheel = MAORI.event.wheel;
   //By default Key Events are enabled
   MAORI.event.enableKeyEvent();
 };
