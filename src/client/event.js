@@ -42,7 +42,8 @@ MAORI.event = {fileDropped: 'fileDropped',
   enableKeys: 'enableKeys',
   disableKeys: 'disableKeys',
   showTextInput: 'showTextInput',
-  relateSelected: 'relateSelected'};
+  relateSelected: 'relateSelected',
+  parentSelected: 'parentSelected'};
 
 
 /**

@@ -457,9 +457,9 @@ MAORI.model.BoxDecorator = function(rectangle, ctx) {
 
   this.scale = function(s) {
     this.x += s;
-    this.y += s + (1 * s/2);
-    this.x2 += s + (1 * s/2);
-    this.y2 += s + (1 * s/2);
+    this.y += s + (1 * s / 2);
+    this.x2 += s + (1 * s / 2);
+    this.y2 += s + (1 * s / 2);
     offset += s;
     if (this.decorator !== null) {
       this.decorator.scale(s);
@@ -538,21 +538,24 @@ MAORI.model.SpecialBoxDecorator.constructor = MAORI.model.SpecialBoxDecorator;
 
 /**
 * @constructor
-* @param {Integer} fromX origin.
-* @param {Integer} fromY origin.
-* @param {Integer} toX destiny.
-* @param {Integer} toY destiny.
+* @param {Object} from drawable.
+* @param {Object} to drawable.
 * @param {Object} ctx 2D drawing context.
 */
-MAORI.model.Arrow = function(fromX, fromY, toX, toY, ctx) {
-  this.x1 = fromX;
-  this.y1 = fromY;
-  this.x2 = toX;
-  this.y2 = toY;
+MAORI.model.Arrow = function(from, to, ctx) {
+  this.from = from;
+  this.to = to;
   this.drawingContext = ctx;
+  this.thickness = 1;
 
   this.draw = function() {
-    //implement line drawing + arrow
+    ctx.beginPath();
+    var line = this.__proto.calculateLine.apply(this, []);
+    ctx.moveTo(line.x1, line.y1);
+    ctx.lineTo(line.x2, line.y2);
+    //TODO: Add triangle at the end of the line
+    ctx.strokeStyle = '#2E5CBA';
+    ctx.stroke();
   };
 
   this.scale = this.__proto__.scale;
@@ -941,6 +944,8 @@ MAORI.model.init = function() {
                             MAORI.model.createFile, false);
   document.addEventListener(MAORI.event.relateSelected,
                             MAORI.model.relateSelected, false);
+  document.addEventListener(MAORI.event.parentSelected,
+                            MAORI.model.parentSelected, false);
 };
 
 
@@ -999,11 +1004,39 @@ MAORI.model.relateElement = function(e1, e2) {
 
 
 /**
+* Parent the selected Elements
+*/
+MAORI.model.parentSelected = function() {
+  if (MAORI.model.selected.length > 0) {
+    var parent = MAORI.model.selected[0];
+    for (var i = 1; i < MAORI.model.selected.length; i++) {
+      MAORI.model.parentElement(parent,
+                                MAORI.model.selected[i]);
+    }
+  }
+};
+
+
+/**
+* Creates a Parent Child relation between
+* two elements
+* @param {Object} e1 to be Parent of e2.
+* @param {Object} e2 to be Child of e1.
+*/
+MAORI.model.parentElement = function(e1, e2) {
+  var ctx = MAORI.general.drawingCanvas.getContext('2d');
+  var arrow = new MAORI.model.Arrow(e1, e2, ctx);
+  MAORI.model.addDrawable(line);
+  MAORI.event.fireEvent(MAORI.event.repaint, document, null);
+};
+
+
+/**
 * Scales all drawables.
 * @param {Integer} s scale to apply.
 */
 MAORI.model.scaleAll = function(s) {
-  for(var i = 0; i < MAORI.model.drawables.length; i++) {
+  for (var i = 0; i < MAORI.model.drawables.length; i++) {
     MAORI.model.drawables[i].scale(s);
   }
   MAORI.event.fireEvent(MAORI.event.repaint, document, null);

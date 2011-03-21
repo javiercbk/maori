@@ -83,7 +83,8 @@ body{
  border-style: solid;
  border-color: white;
  border-width: 2px;
- position: absolute;x
+ position: absolute;
+ display: block;
 }
 
 .showButton{ 

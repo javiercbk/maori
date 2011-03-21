@@ -122,10 +122,22 @@ MAORI.tools.addRelateTool = function() {
 
 
 /**
+* Adds the parent tool to the toolbox
+*/
+MAORI.tools.addParentTool = function() {
+  var onClickFun = function(event) {
+    MAORI.event.fireEvent(MAORI.event.parentSelected, document, null);
+  }
+  MAORI.tools.addTool('images/parent-tool.png', onClickFun);
+};
+
+
+/**
 * Toolbox init function
 * @param {String} toolbox id as String.
 */
 MAORI.tools.init = function(toolbox) {
   MAORI.tools.toolbox = document.getElementById(toolbox);
   MAORI.tools.addRelateTool();
+  MAORI.tools.addParentTool();
 };
