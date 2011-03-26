@@ -82,6 +82,12 @@ MAORI.model.RAINDROP = false;
 MAORI.model.dragStartedPoint = {x: -1, y: -1};
 
 
+/**
+* Current scale for he drawing canvas.
+*/
+MAORI.model.currentScale = 0;
+
+
 
 /**
 * @constructor
@@ -382,14 +388,23 @@ MAORI.model.Line = function(from, to, ctx) {
     ctx.stroke();
   };
 
+  var calculateCenter = function(element) {
+    var cx = -1;
+    var cy = -1;
+    var r = element.getRectangle();
+    cx = (r.x1 + r.x2) / 2;
+    cy = (r.y1 + r.y2) / 2;
+    return {x: cx, y: cy};
+  };
+
+  /**
+  * y = ax + b
+  * x = (y - b) / a
+  */ 
   this.calculateLine = function() {
-    var rFrom = this.from.getRectangle();
-    var rTo = this.to.getRectangle();
-    var cx1 = (rFrom.x1 + rFrom.x2) / 2;
-    var cy1 = (rFrom.y1 + rFrom.y2) / 2;
-    var cx2 = (rTo.x1 + rTo.x2) / 2;
-    var cy2 = (rTo.y1 + rTo.y2) / 2;
-    return {x1: cx1, x2: cx2, y1: cy1, y2: cy2};
+    var c1 = calculateCenter(this.from);
+    var c2 = calculateCenter(this.to);
+    return {x1: c1.x, x2: c2.x, y1: c1.y, y2: c2.y};
   };
 
   this.scale = function(s) {
@@ -620,6 +635,16 @@ MAORI.model.addDrawable = function(drawable) {
   MAORI.model.drawables.push(drawable);
 };
 
+
+/**
+* Adds a drawable object at the begining to list of drawables to
+* be rendered.
+* @param {Object} drawable to add.
+*/
+MAORI.model.addFirstDrawable = function(drawable) {
+  var first = [drawable];
+  MAORI.model.drawables = first.concat(MAORI.model.drawables);
+};
 
 /**
 * Removes a drawable object to list of drawables
@@ -998,8 +1023,8 @@ MAORI.model.relateSelected = function() {
 MAORI.model.relateElement = function(e1, e2) {
   var ctx = MAORI.general.drawingCanvas.getContext('2d');
   var line = new MAORI.model.Line(e1, e2, ctx);
-  MAORI.model.addDrawable(line);
-  MAORI.event.fireEvent(MAORI.event.repaint, document, null);
+  MAORI.model.addFirstDrawable(line);
+  MAORI.event.fireEvent(MAORI.event.paint, document, null);
 };
 
 
@@ -1026,8 +1051,8 @@ MAORI.model.parentSelected = function() {
 MAORI.model.parentElement = function(e1, e2) {
   var ctx = MAORI.general.drawingCanvas.getContext('2d');
   var arrow = new MAORI.model.Arrow(e1, e2, ctx);
-  MAORI.model.addDrawable(line);
-  MAORI.event.fireEvent(MAORI.event.repaint, document, null);
+  MAORI.model.addFirstDrawable(line);
+  MAORI.event.fireEvent(MAORI.event.paint, document, null);
 };
 
 
@@ -1036,6 +1061,7 @@ MAORI.model.parentElement = function(e1, e2) {
 * @param {Integer} s scale to apply.
 */
 MAORI.model.scaleAll = function(s) {
+  MAORI.model.currentScale += s;
   for (var i = 0; i < MAORI.model.drawables.length; i++) {
     MAORI.model.drawables[i].scale(s);
   }
