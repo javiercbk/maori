@@ -70,11 +70,15 @@ MAORI.draw.paint = function() {
   //Cycle through all drawable
   for (var i = 0; i < MAORI.model.drawables.length; i++) {
     var drawable = MAORI.model.drawables[i];
-    if(drawable.hasOwnProperty('getRectangle')) {
+    if (drawable.hasOwnProperty('getRectangle')) {
       var r = drawable.getRectangle();
       var ctx = MAORI.general.drawingCanvas.getContext('2d');
-      var o = 6 + MAORI.model.currentScale;
-      ctx.clearRect(r.x1 - o, r.y1 - o,  (r.x2 - r.x1) + o, (r.y2 - r.y1) + o);
+      var o = 10 + MAORI.model.currentScale;
+      ctx.fillStyle = '#353333';
+      ctx.strokeStyle = '#353333';
+      ctx.strokeRect(r.x1 - o, r.y1 - o, (r.x2 - r.x1) + o, (r.y2 - r.y1) + o);
+      ctx.fillRect(r.x1 - o, r.y1 - o, (r.x2 - r.x1) + o, (r.y2 - r.y1) + o);
+      ctx.stroke();
     }
     drawable.draw();
   }

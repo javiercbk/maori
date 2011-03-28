@@ -382,9 +382,11 @@ MAORI.model.Line = function(from, to, ctx) {
   this.draw = function() {
     ctx.beginPath();
     var line = this.calculateLine();
+    ctx.beginPath();
     ctx.moveTo(line.x1, line.y1);
     ctx.lineTo(line.x2, line.y2);
     ctx.strokeStyle = '#2E5CBA';
+    ctx.closePath();
     ctx.stroke();
   };
 
@@ -397,10 +399,6 @@ MAORI.model.Line = function(from, to, ctx) {
     return {x: cx, y: cy};
   };
 
-  /**
-  * y = ax + b
-  * x = (y - b) / a
-  */ 
   this.calculateLine = function() {
     var c1 = calculateCenter(this.from);
     var c2 = calculateCenter(this.to);
@@ -452,12 +450,12 @@ MAORI.model.BoxDecorator = function(rectangle, ctx) {
 
   this.draw = function() {
     ctx.beginPath();
+    ctx.strokeStyle = '#E1D514';
     ctx.moveTo(this.x - offset, this.y - offset);
     ctx.lineTo(this.x2 + offset, this.y - offset);
     ctx.lineTo(this.x2 + offset, this.y2 + offset);
     ctx.lineTo(this.x - offset, this.y2 + offset);
     ctx.lineTo(this.x - offset, this.y - offset);
-    ctx.strokeStyle = '#E1D514';
     ctx.stroke();
   };
 
