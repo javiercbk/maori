@@ -39,6 +39,12 @@ MAORI.draw.animationId = -1;
 
 
 /**
+* Current drawing stack
+*/
+MAORI.draw.drawingStack = 0;
+
+
+/**
 * Starts an animation, if an animation
 * is currently in progress it will do
 * nothing.
@@ -70,17 +76,42 @@ MAORI.draw.paint = function() {
   //Cycle through all drawable
   for (var i = 0; i < MAORI.model.drawables.length; i++) {
     var drawable = MAORI.model.drawables[i];
+    var ctx = MAORI.general.drawingCanvas.getContext('2d');
     if (drawable.hasOwnProperty('getRectangle')) {
       var r = drawable.getRectangle();
-      var ctx = MAORI.general.drawingCanvas.getContext('2d');
       var o = 10 + MAORI.model.currentScale;
       ctx.fillStyle = '#353333';
       ctx.strokeStyle = '#353333';
-      ctx.strokeRect(r.x1 - o, r.y1 - o, (r.x2 - r.x1) + o, (r.y2 - r.y1) + o);
       ctx.fillRect(r.x1 - o, r.y1 - o, (r.x2 - r.x1) + o, (r.y2 - r.y1) + o);
       ctx.stroke();
     }
+    MAORI.draw.pushContext()
     drawable.draw();
+    ctx.stroke();
+    MAORI.draw.popContext();
+  }
+};
+
+
+/**
+* Push the current context to the canvas drawing stack.
+*/
+MAORI.draw.pushContext = function() {
+  var ctx = MAORI.general.drawingCanvas.getContext('2d');
+  ctx.save();
+  MAORI.draw.drawingStack++;
+};
+
+
+/**
+* Pops a context from canvas stacks and stroke it.
+*/
+MAORI.draw.popContext = function() {
+  if (MAORI.draw.drawingStack >= 0) {
+    var ctx = MAORI.general.drawingCanvas.getContext('2d');
+    ctx.restore();
+    MAORI.draw.drawingStack--;
+    ctx.stroke();
   }
 };
 

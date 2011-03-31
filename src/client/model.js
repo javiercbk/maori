@@ -146,7 +146,6 @@ MAORI.model.Circle = function(x, y, radius, color, ctx) {
     this.drawingContext.arc(this.x, this.y, this.radius, 0,
                             Math.PI * 2, true);
     this.drawingContext.closePath();
-    this.drawingContext.stroke();
   };
 
   this.scale = function(s) {
@@ -260,7 +259,6 @@ MAORI.model.File = function(x, y, imagesrc, file, ctx) {
     if (this.decorator != null) {
       this.decorator.draw();
     }
-    this.drawingContext.stroke();
   };
 
   this.isTouched = function(x, y) {
@@ -320,7 +318,6 @@ MAORI.model.Text = function(x, y, text, ctx) {
     if (this.decorator != null) {
       this.decorator.draw();
     }
-    this.drawingContext.stroke();
   };
 
   this.getRectangle = function() {
@@ -387,7 +384,6 @@ MAORI.model.Line = function(from, to, ctx) {
     ctx.lineTo(line.x2, line.y2);
     ctx.strokeStyle = '#2E5CBA';
     ctx.closePath();
-    ctx.stroke();
   };
 
   var calculateCenter = function(element) {
@@ -456,7 +452,6 @@ MAORI.model.BoxDecorator = function(rectangle, ctx) {
     ctx.lineTo(this.x2 + offset, this.y2 + offset);
     ctx.lineTo(this.x - offset, this.y2 + offset);
     ctx.lineTo(this.x - offset, this.y - offset);
-    ctx.stroke();
   };
 
   this.move = function(moveToX, moveToY) {
@@ -524,7 +519,6 @@ MAORI.model.SpecialBoxDecorator = function(rectangle, ctx) {
     ctx.lineTo(this.x - currentOffset, this.y2 + currentOffset);
     ctx.lineTo(this.x - currentOffset, this.y - currentOffset);
     ctx.strokeStyle = '#E1D514';
-    ctx.stroke();
   };
 
   this.move = function(moveToX, moveToY) {
@@ -568,7 +562,6 @@ MAORI.model.Arrow = function(from, to, ctx) {
     ctx.lineTo(line.x2, line.y2);
     //TODO: Add triangle at the end of the line
     ctx.strokeStyle = '#2E5CBA';
-    ctx.stroke();
   };
 
   this.scale = this.__proto__.scale;
