@@ -379,7 +379,7 @@ MAORI.model.Line = function(from, to, ctx) {
   this.draw = function() {
     ctx.beginPath();
     var line = this.calculateLine();
-    ctx.beginPath();
+    ctx.lineWidth = 3;
     ctx.moveTo(line.x1, line.y1);
     ctx.lineTo(line.x2, line.y2);
     ctx.strokeStyle = '#2E5CBA';

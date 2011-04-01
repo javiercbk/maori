@@ -81,7 +81,6 @@ MAORI.draw.paint = function() {
       var r = drawable.getRectangle();
       var o = 10 + MAORI.model.currentScale;
       ctx.fillStyle = '#353333';
-      ctx.strokeStyle = '#353333';
       ctx.fillRect(r.x1 - o, r.y1 - o, (r.x2 - r.x1) + o, (r.y2 - r.y1) + o);
       ctx.stroke();
     }
@@ -100,6 +99,7 @@ MAORI.draw.pushContext = function() {
   var ctx = MAORI.general.drawingCanvas.getContext('2d');
   ctx.save();
   MAORI.draw.drawingStack++;
+  ctx.globalAlpha = 1;
 };
 
 
