@@ -82,9 +82,8 @@ MAORI.draw.paint = function() {
       var o = 10 + MAORI.model.currentScale;
       ctx.fillStyle = '#353333';
       ctx.fillRect(r.x1 - o, r.y1 - o, (r.x2 - r.x1) + o, (r.y2 - r.y1) + o);
-      ctx.stroke();
+      MAORI.draw.pushContext();
     }
-    MAORI.draw.pushContext()
     drawable.draw();
     ctx.stroke();
     MAORI.draw.popContext();
