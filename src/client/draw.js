@@ -85,7 +85,7 @@ MAORI.draw.paint = function() {
       MAORI.draw.pushContext();
     }
     drawable.draw();
-    ctx.stroke();
+    MAORI.draw.pushContext();
     MAORI.draw.popContext();
   }
 };
