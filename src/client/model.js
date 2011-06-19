@@ -677,7 +677,7 @@ MAORI.model.createRaindrop = function(x, y) {
   var y = event.properties.y;
   var ctx = MAORI.general.drawingCanvas.getContext('2d');
   var color = {r: 70, g: 213, b: 222};
-  var rainDrop = new MAORI.model.Raindrop(x, y, color, ctx);
+  var rainDrop = new MAORI.model.Raindrop(x, y, color);
   MAORI.model.addDrawable(rainDrop);
   MAORI.event.fireEvent(MAORI.event.animate, document, null);
 };
