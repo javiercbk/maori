@@ -85,7 +85,13 @@ MAORI.draw.paint = function() {
       MAORI.draw.pushContext();
     }
 */
-    MAORI.general.stage.addChild(drawable.draw());
+    if(drawable.constructor.toString().indexOf('Array') == -1){
+      MAORI.general.stage.addChild(drawable.draw());
+    }else{
+      for(var i = 0; i < drawable.length; i++){
+        MAORI.general.stage.addChild(drawable[i].draw());
+      }
+    }
   }
   MAORI.general.stage.update();
 };
@@ -98,6 +104,7 @@ MAORI.draw.paint = function() {
 MAORI.draw.repaint = function() {
   //clean canvas
   MAORI.general.stage.removeAllChildren();
+  MAORI.general.stage.clear();
   MAORI.draw.paint();
 };
 
