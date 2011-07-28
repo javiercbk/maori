@@ -118,10 +118,6 @@ MAORI.general.resize = function() {
 */
 MAORI.general.init = function() {
   MAORI.general.drawingCanvas = document.getElementsByTagName('canvas')[0];
-  //pass the canvas element to the EaselJS Stage instance
-  //The Stage class abstracts away the Canvas element and
-  //is the root level display container for display elements.
-  MAORI.general.stage = new Stage(MAORI.general.drawingCanvas);
   MAORI.general.drawingCanvas.mousemove = MAORI.event.onMouseMove;
   MAORI.general.drawingCanvas.ondrop = MAORI.event.objectDropped;
   MAORI.general.drawingCanvas.ondragover = MAORI.event.cancelDefaultOperation;
