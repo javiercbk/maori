@@ -342,7 +342,7 @@ MAORI.event.onDropDrawable = function(event) {
 MAORI.event.onMouseMove = function(event) {
   MAORI.event.cancelDefaultOperation(event);
   //forces timeout clear
-  clearTimeout(MAORI.event.clockId);
+  //clearTimeout(MAORI.event.clockId);
   if (MAORI.event.mousePressedState) {
     var propertyToAdd = {point: MAORI.event.getEventXY(event)};
     event.properties = propertyToAdd;

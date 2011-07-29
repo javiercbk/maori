@@ -35,7 +35,7 @@ MAORI.model = {};
 /**
 * Non Movable Object to be painted in the canvas
 */
-MAORI.model.drawables = [];
+MAORI.model.drawables = [[]];
 
 
 /**
@@ -106,6 +106,7 @@ MAORI.model.Drawable = function(x, y) {
   this.getRectangle = function() { return 0; };
   this.post = function() {/*Do nothing function*/};
   this.scale = function(s) {/*Do nothing function*/};
+  this.isTouched = function(x, y) { return false; };
   this.rotate = function(radian) {
     this.rotation = radian;
   };
@@ -128,14 +129,16 @@ MAORI.model.Drawable = function(x, y) {
 * @param {Integer} y position.
 * @param {Float} radius of the circle.
 * @param {Object} color of the circle.
+* @param {Integer} layer where it belongs.
 * @param {Object} ctx 2D drawing context.
 */
-MAORI.model.Circle = function(x, y, radius, color, ctx) {
+MAORI.model.Circle = function(x, y, radius, color, layer, ctx) {
   this.x = x;
   this.y = y;
   this.color = color;
   this.radius = radius;
   this.drawingContext = ctx;
+  this.layer = layer;
 
   this.draw = function() {
     var colorStyle = 'rgba(' + this.color.r + ',' +
@@ -161,20 +164,22 @@ MAORI.model.Circle = function(x, y, radius, color, ctx) {
 * @param {Integer} x position.
 * @param {Integer} y position.
 * @param {Object} color rgb.
+* @param {Integer} layer where it belongs.
 * @param {Object} ctx 2D drawing context.
 */
-MAORI.model.Raindrop = function(x, y, color, ctx) {
+MAORI.model.Raindrop = function(x, y, color, layer, ctx) {
   this.x = x;
   this.y = y;
   this.drawingContext = ctx;
   var currentAlpha = 1.0;
   var currentSize = 10;
   this.color = color;
+  this.layer = layer
 
   this.draw = function() {
     this.color.alpha = currentAlpha;
     var circle = new MAORI.model.Circle(this.x, this.y,
-        currentSize, this.color, this.drawingContext);
+      currentSize, this.color, 1,this.drawingContext);
     circle.draw();
     currentAlpha = currentAlpha - 0.05;
     if ((currentAlpha - 0.01) <= 0.00) {
@@ -182,7 +187,7 @@ MAORI.model.Raindrop = function(x, y, color, ctx) {
     }
     currentSize += 1;
     if (this.isNonVisible()) {
-      MAORI.model.removeDrawable(this);
+      MAORI.model.removeDrawable(this, this.layer);
     }
   };
 
@@ -219,9 +224,10 @@ MAORI.model.Raindrop.constructor = MAORI.model.Raindrop;
 * @param {Integer} y position.
 * @param {String} imagesrc source to request the image.
 * @param {Object} file to upload.
+* @param {Integer} layer where it belongs.
 * @param {Object} ctx 2D drawing context.
 */
-MAORI.model.File = function(x, y, imagesrc, file, ctx) {
+MAORI.model.File = function(x, y, imagesrc, file, layer, ctx) {
   var xOffset = 17;
   var yOffset = 11;
   this.x = x;
@@ -233,6 +239,7 @@ MAORI.model.File = function(x, y, imagesrc, file, ctx) {
   this.image = new Image();
   this.image.src = imagesrc;
   this.decorator = null;
+  this.layer = layer;
 
   this.getRectangle = function() {
     var height = this.image.height;
@@ -295,9 +302,10 @@ MAORI.model.File.constructor = MAORI.model.File;
 * @param {Integer} x position.
 * @param {Integer} y position.
 * @param {String} text to be shown.
+* @param {Integer} layer where it belongs.
 * @param {Object} ctx 2D drawing context.
 */
-MAORI.model.Text = function(x, y, text, ctx) {
+MAORI.model.Text = function(x, y, text, layer, ctx) {
   this.x = x;
   this.y = y;
   this.drawingContext = ctx;
@@ -310,6 +318,7 @@ MAORI.model.Text = function(x, y, text, ctx) {
   var fontSize = 12;
 
   this.decorator = null;
+  this.layer = layer;
 
   this.draw = function() {
     this.drawingContext.font = fontSize + 'px Arial';
@@ -367,14 +376,16 @@ MAORI.model.Text.constructor = MAORI.model.Text;
 * @constructor
 * @param {Object} from drawable.
 * @param {Object} to drawable.
+* @param {Integer} layer where it belongs.
 * @param {Object} ctx 2D drawing context.
 */
-MAORI.model.Line = function(from, to, ctx) {
+MAORI.model.Line = function(from, to, layer, ctx) {
   this.from = from;
   this.to = to;
   this.drawingContext = ctx;
   this.decorator = null;
   this.thickness = 1;
+  this.layer = layer;
 
   this.draw = function() {
     ctx.beginPath();
@@ -547,13 +558,15 @@ MAORI.model.SpecialBoxDecorator.constructor = MAORI.model.SpecialBoxDecorator;
 * @constructor
 * @param {Object} from drawable.
 * @param {Object} to drawable.
+* @param {Integer} layer where it belongs.
 * @param {Object} ctx 2D drawing context.
 */
-MAORI.model.Arrow = function(from, to, ctx) {
+MAORI.model.Arrow = function(from, to, layer, ctx) {
   this.from = from;
   this.to = to;
   this.drawingContext = ctx;
   this.thickness = 1;
+  this.layer = layer;
 
   this.draw = function() {
     ctx.beginPath();
@@ -587,15 +600,17 @@ MAORI.model.Arrow.constructor = MAORI.model.Arrow;
 * @param {Integer} fromY origin.
 * @param {Integer} toX destiny.
 * @param {Integer} toY destiny.
+* @param {Integer} layer where it belongs. 
 * @param {Object} ctx 2D drawing context.
 */
-MAORI.model.TwoSidedArrow = function(fromX, fromY, toX, toY, ctx) {
+MAORI.model.TwoSidedArrow = function(fromX, fromY, toX, toY, layer, ctx) {
   this.x1 = fromX;
   this.y1 = fromY;
   this.x2 = toX;
   this.y2 = toY;
   this.decorator = null;
   this.drawingContext = ctx;
+  this.layer = layer;
 
   this.draw = function() {
     //implement line drawing + arrow
@@ -621,21 +636,20 @@ MAORI.model.TwoSidedArrow.constructor = MAORI.model.TwoSidedArrow;
 * Adds a drawable object to list of drawables to
 * be rendered.
 * @param {Object} drawable to add.
+* @param {Integer} layer where to be added.
 */
-MAORI.model.addDrawable = function(drawable) {
-  MAORI.model.drawables.push(drawable);
+MAORI.model.addDrawable = function(drawable, layer) {
+  var j = layer;
+  while(j >= 0){
+    if(MAORI.model.drawables[j] === undefined){
+      //create empty "layer"
+      MAORI.model.drawables.push([]);
+    }
+    j--;
+  }
+  MAORI.model.drawables[layer].push(drawable);
 };
 
-
-/**
-* Adds a drawable object at the begining to list of drawables to
-* be rendered.
-* @param {Object} drawable to add.
-*/
-MAORI.model.addFirstDrawable = function(drawable) {
-  var first = [drawable];
-  MAORI.model.drawables = first.concat(MAORI.model.drawables);
-};
 
 /**
 * Removes a drawable object to list of drawables
@@ -643,15 +657,15 @@ MAORI.model.addFirstDrawable = function(drawable) {
 * @return {Integer} index of the removed drawable.
 */
 //TODO: make it more efficient
-MAORI.model.removeDrawable = function(drawable) {
-  var drawableIndex = MAORI.model.drawables.indexOf(drawable);
-  var drawableSize = MAORI.model.drawables.length;
+MAORI.model.removeDrawable = function(drawable, layer) {
+  var drawableIndex = MAORI.model.drawables[layer].indexOf(drawable);
+  var drawableSize = MAORI.model.drawables[layer].length;
   if (drawableIndex === 0) {
-    MAORI.model.drawables.shift();
+    MAORI.model.drawables[layer].shift();
   }else if (drawableIndex > 0) {
     //last element
     if (drawableIndex === (drawableSize - 1)) {
-      MAORI.model.drawables.pop();
+      MAORI.model.drawables[layer].pop();
     } else {
       var temp = [];
       for (var i = 0; i < drawableSize; i++) {
@@ -659,10 +673,10 @@ MAORI.model.removeDrawable = function(drawable) {
           temp.push(MAORI.model.drawables[i]);
         }
       }
-      MAORI.model.drawables = temp;
+      MAORI.model.drawables[layer] = temp;
     }
-    MAORI.model.stopAnimation();
   }
+  MAORI.model.stopAnimation();
   return drawableIndex;
 };
 
@@ -677,8 +691,8 @@ MAORI.model.createRaindrop = function(x, y) {
   var y = event.properties.y;
   var ctx = MAORI.general.drawingCanvas.getContext('2d');
   var color = {r: 70, g: 213, b: 222};
-  var rainDrop = new MAORI.model.Raindrop(x, y, color, ctx);
-  MAORI.model.addDrawable(rainDrop);
+  var rainDrop = new MAORI.model.Raindrop(x, y, color, 1, ctx);
+  MAORI.model.addDrawable(rainDrop,1);
   MAORI.event.fireEvent(MAORI.event.animate, document, null);
 };
 
@@ -689,7 +703,7 @@ MAORI.model.createRaindrop = function(x, y) {
 */
 MAORI.model.createBoxDecorator = function(drawable) {
   var rectangle = drawable.getRectangle();
-  var ctx = MAORI.general.drawingCanvas.getContext('2d');
+  var ctx = MAORI.draw.ctx;
   var box = new MAORI.model.BoxDecorator(rectangle, ctx);
   drawable.decorator = box;
   MAORI.event.fireEvent(MAORI.event.repaint, document, null);
@@ -732,13 +746,14 @@ MAORI.model.performClick = function(event, func) {
   if (!event.ctrlKey) {
     MAORI.model.clearSelected();
   }
-  var drawableSize = MAORI.model.drawables.length;
-  for (var i = 0; i < drawableSize; i++) {
-    var drawable = MAORI.model.drawables[i];
-    if (drawable.isTouched(x, y)) {
-      func(drawable);
-      //avoid keeping evaluating
-      return;
+  for(var j = MAORI.model.drawables.length - 1; j >= 0 ; j--){
+    for (var i = 0; i < MAORI.model.drawables[j].length; i++) {
+      var drawable = MAORI.model.drawables[j][i];
+      if (drawable.isTouched(x, y)) {
+        func(drawable);
+        //avoid keeping evaluating
+        return;
+      }
     }
   }
 };
@@ -770,14 +785,14 @@ MAORI.model.specialAction = function(drawable) {
 *
 */
 MAORI.model.clearSelected = function() {
-  MAORI.model.selected = [];
-  var drawableSize = MAORI.model.drawables.length;
-  for (var i = 0; i < drawableSize; i++) {
-    var drawable = MAORI.model.drawables[i];
-    if (drawable.decorator instanceof MAORI.model.BoxDecorator) {
-      drawable.decorator = null;
+    for(var j = MAORI.model.drawables.length - 1; j >= 0 ; j--){
+      for (var i = 0; i < MAORI.model.drawables[j].length; i++) {
+        var drawable = MAORI.model.drawables[j][i];
+        if (drawable.decorator instanceof MAORI.model.BoxDecorator) {
+          drawable.decorator = null;
+        }
+      }
     }
-  }
   MAORI.event.fireEvent(MAORI.event.repaint, document, null);
 };
 
@@ -803,11 +818,11 @@ MAORI.model.createFile = function(event) {
 */
 MAORI.model._createFile = function(x, y, f) {
   var ctx = MAORI.general.drawingCanvas.getContext('2d');
-  var file = new MAORI.model.File(x, y, 'images/file_icon.gif', f, ctx);
+  var file = new MAORI.model.File(x, y, 'images/file_icon.gif', f, 0, ctx);
   var color = {r: 70, g: 213, b: 222};
-  var raindrop = new MAORI.model.Raindrop(x + 7 , y + 7, color, ctx);
-  MAORI.model.addDrawable(file);
-  MAORI.model.addDrawable(raindrop);
+  var raindrop = new MAORI.model.Raindrop(x + 7 , y + 7, color, 1, ctx);
+  MAORI.model.addDrawable(file,0);
+  MAORI.model.addDrawable(raindrop,1);
   MAORI.event.fireEvent(MAORI.event.animate, document, null);
   return file;
 };
@@ -835,11 +850,11 @@ MAORI.model.createText = function(event) {
 */
 MAORI.model._createText = function(x, y, textString) {
   var ctx = MAORI.general.drawingCanvas.getContext('2d');
-  var text = new MAORI.model.Text(x, y, textString, ctx);
+  var text = new MAORI.model.Text(x, y, textString, 0, ctx);
   var color = {r: 70, g: 213, b: 222};
-  var raindrop = new MAORI.model.Raindrop(x + 7, y, color, ctx);
-  MAORI.model.addDrawable(text);
-  MAORI.model.addDrawable(raindrop);
+  var raindrop = new MAORI.model.Raindrop(x + 7, y, color, 1, ctx);
+  MAORI.model.addDrawable(text,0);
+  MAORI.model.addDrawable(raindrop,1);
   MAORI.event.fireEvent(MAORI.event.animate, document, null);
   return text;
 };
@@ -851,10 +866,12 @@ MAORI.model._createText = function(x, y, textString) {
 * @return {Boolean} true if animation is being displayed otherwise false.
 */
 MAORI.model.checkForAnimation = function() {
-  var drawableSize = MAORI.model.drawables.length;
-  for (var i = 0; i < drawableSize; i++) {
-    if (MAORI.model.drawables[i].hasOwnProperty('isNonVisible')) {
-      return true;
+  for(var j = MAORI.model.drawables.length - 1; j >= 0 ; j--){
+    for (var i = 0; i < MAORI.model.drawables[j].length; i++) {
+      var drawable = MAORI.model.drawables[j][i];
+      if (drawable.hasOwnProperty('isNonVisible')) {
+        return true;
+      }
     }
   }
   return false;
@@ -871,13 +888,14 @@ MAORI.model.dragStart = function(event) {
   //console.log('dragStart x:' + x + ' y: ' + y);
   MAORI.model.dragStartedPoint.x = x;
   MAORI.model.dragStartedPoint.y = y;
-  var drawableSize = MAORI.model.drawables.length;
   MAORI.model.dragState = true;
-  for (var i = 0; i < drawableSize; i++) {
-    var drawable = MAORI.model.drawables[i];
-    if (drawable.isTouched(x, y)) {
-      MAORI.model.dragDrawables = true;
-      return;
+  for(var j = MAORI.model.drawables.length - 1; j >= 0 ; j--){
+    for (var i = 0; i < MAORI.model.drawables[j].length; i++) {
+      var drawable = MAORI.model.drawables[j][i];
+      if (drawable.isTouched(x, y)) {
+        MAORI.model.dragDrawables = true;
+        return;
+      }
     }
   }
 };
@@ -920,19 +938,23 @@ MAORI.model.mouseMove = function(event) {
   MAORI.model.dragStartedPoint.y = y;
   if (MAORI.model.dragDrawables) {
     //dragging drawables
-    for (var i = 0; i < MAORI.model.selected.length; i++) {
-      var drawable = MAORI.model.selected[i];
-      var newX = drawable.x + offsetX;
-      var newY = drawable.y + offsetY;
-      drawable.move(newX, newY);
+    for(var j = MAORI.model.drawables.length - 1; j >= 0 ; j--){
+      for (var i = 0; i < MAORI.model.drawables[j].length; i++) {
+        var drawable = MAORI.model.drawables[j][i];
+        var newX = drawable.x + offsetX;
+        var newY = drawable.y + offsetY;
+        drawable.move(newX, newY);
+      }
     }
   } else {
     //moving display region
-    for (var i = 0; i < MAORI.model.drawables.length; i++) {
-      var drawable = MAORI.model.drawables[i];
-      var newX = drawable.x + offsetX;
-      var newY = drawable.y + offsetY;
-      drawable.move(newX, newY);
+    for(var j = MAORI.model.drawables.length - 1; j >= 0 ; j--){
+      for (var i = 0; i < MAORI.model.drawables[j].length; i++) {
+        var drawable = MAORI.model.drawables[j][i];
+        var newX = drawable.x + offsetX;
+        var newY = drawable.y + offsetY;
+        drawable.move(newX, newY);
+      }
     }
     MAORI.model.displaying.x = MAORI.model.displaying.x + offsetX;
     MAORI.model.displaying.y = MAORI.model.displaying.y + offsetY;
@@ -1011,8 +1033,8 @@ MAORI.model.relateSelected = function() {
 */
 MAORI.model.relateElement = function(e1, e2) {
   var ctx = MAORI.general.drawingCanvas.getContext('2d');
-  var line = new MAORI.model.Line(e1, e2, ctx);
-  MAORI.model.addFirstDrawable(line);
+  var line = new MAORI.model.Line(e1, e2, 2, ctx);
+  MAORI.model.addDrawable(line,2);
   MAORI.event.fireEvent(MAORI.event.repaint, document, null);
 };
 
@@ -1040,7 +1062,7 @@ MAORI.model.parentSelected = function() {
 MAORI.model.parentElement = function(e1, e2) {
   var ctx = MAORI.general.drawingCanvas.getContext('2d');
   var arrow = new MAORI.model.Arrow(e1, e2, ctx);
-  MAORI.model.addFirstDrawable(line);
+  MAORI.model.addDrawable(line,3);
   MAORI.event.fireEvent(MAORI.event.repaint, document, null);
 };
 
@@ -1051,8 +1073,10 @@ MAORI.model.parentElement = function(e1, e2) {
 */
 MAORI.model.scaleAll = function(s) {
   MAORI.model.currentScale += s;
-  for (var i = 0; i < MAORI.model.drawables.length; i++) {
-    MAORI.model.drawables[i].scale(s);
+  for(var j = MAORI.model.drawables.length - 1; j >= 0 ; j--){
+      for (var i = 0; i < MAORI.model.drawables[j].length; i++) {
+        MAORI.model.drawables[j][i].scale(s);
+      }
   }
   MAORI.event.fireEvent(MAORI.event.repaint, document, null);
 };

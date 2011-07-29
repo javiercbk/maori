@@ -74,19 +74,21 @@ MAORI.draw.stopAnimation = function() {
 */
 MAORI.draw.paint = function() {
   //Cycle through all drawable
-  for (var i = 0; i < MAORI.model.drawables.length; i++) {
-    var drawable = MAORI.model.drawables[i];
-    var ctx = MAORI.general.drawingCanvas.getContext('2d');
-    if (drawable.hasOwnProperty('getRectangle')) {
-      var r = drawable.getRectangle();
-      var o = 10 + MAORI.model.currentScale;
-      ctx.fillStyle = '#353333';
-      ctx.fillRect(r.x1 - o, r.y1 - o, (r.x2 - r.x1) + o, (r.y2 - r.y1) + o);
-      MAORI.draw.pushContext();
+  for(var j = MAORI.model.drawables.length - 1; j >= 0 ; j--){
+    for (var i = 0; i < MAORI.model.drawables[j].length; i++) {
+      var drawable = MAORI.model.drawables[j][i];
+      var ctx = MAORI.draw.ctx;
+      /*
+      if (drawable.hasOwnProperty('getRectangle')) {
+        var r = drawable.getRectangle();
+        var o = 10 + MAORI.model.currentScale;
+        ctx.fillStyle = '#353333';
+        ctx.fillRect(r.x1 - o, r.y1 - o, (r.x2 - r.x1) + o, (r.y2 - r.y1) + o);
+        ctx.stroke();
+      }*/
+      drawable.draw();
+      ctx.stroke();
     }
-    drawable.draw();
-    MAORI.draw.pushContext();
-    MAORI.draw.popContext();
   }
 };
 
@@ -95,7 +97,7 @@ MAORI.draw.paint = function() {
 * Push the current context to the canvas drawing stack.
 */
 MAORI.draw.pushContext = function() {
-  var ctx = MAORI.general.drawingCanvas.getContext('2d');
+  var ctx = MAORI.draw.ctx;
   ctx.save();
   MAORI.draw.drawingStack++;
   ctx.globalAlpha = 1;
@@ -107,11 +109,13 @@ MAORI.draw.pushContext = function() {
 */
 MAORI.draw.popContext = function() {
   if (MAORI.draw.drawingStack >= 0) {
-    var ctx = MAORI.general.drawingCanvas.getContext('2d');
+    var ctx = MAORI.draw.ctx;
     ctx.restore();
     MAORI.draw.drawingStack--;
-    ctx.stroke();
+    
+    return true;
   }
+  return false;
 };
 
 
@@ -130,6 +134,7 @@ MAORI.draw.repaint = function() {
 * @this {Module} MAORI.draw Module.
 */
 MAORI.draw.init = function() {
+  MAORI.draw.ctx = MAORI.general.drawingCanvas.getContext('2d');
   document.addEventListener(MAORI.event.repaint, this.repaint, false);
   document.addEventListener(MAORI.event.paint, this.paint, false);
   document.addEventListener(MAORI.event.animate, this.animate, false);
