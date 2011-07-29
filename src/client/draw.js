@@ -78,14 +78,13 @@ MAORI.draw.paint = function() {
     for (var i = 0; i < MAORI.model.drawables[j].length; i++) {
       var drawable = MAORI.model.drawables[j][i];
       var ctx = MAORI.draw.ctx;
-      /*
       if (drawable.hasOwnProperty('getRectangle')) {
         var r = drawable.getRectangle();
         var o = 10 + MAORI.model.currentScale;
         ctx.fillStyle = '#353333';
         ctx.fillRect(r.x1 - o, r.y1 - o, (r.x2 - r.x1) + o, (r.y2 - r.y1) + o);
-        ctx.stroke();
-      }*/
+        //ctx.fill();
+      }
       drawable.draw();
       ctx.stroke();
     }

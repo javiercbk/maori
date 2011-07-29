@@ -785,14 +785,11 @@ MAORI.model.specialAction = function(drawable) {
 *
 */
 MAORI.model.clearSelected = function() {
-    for(var j = MAORI.model.drawables.length - 1; j >= 0 ; j--){
-      for (var i = 0; i < MAORI.model.drawables[j].length; i++) {
-        var drawable = MAORI.model.drawables[j][i];
-        if (drawable.decorator instanceof MAORI.model.BoxDecorator) {
-          drawable.decorator = null;
-        }
-      }
-    }
+  for (var i = 0; i < MAORI.model.selected.length; i++) {
+    var drawable = MAORI.model.selected[i];
+    drawable.decorator = null;
+  }
+  MAORI.model.selected = [];
   MAORI.event.fireEvent(MAORI.event.repaint, document, null);
 };
 
@@ -938,13 +935,11 @@ MAORI.model.mouseMove = function(event) {
   MAORI.model.dragStartedPoint.y = y;
   if (MAORI.model.dragDrawables) {
     //dragging drawables
-    for(var j = MAORI.model.drawables.length - 1; j >= 0 ; j--){
-      for (var i = 0; i < MAORI.model.drawables[j].length; i++) {
-        var drawable = MAORI.model.drawables[j][i];
-        var newX = drawable.x + offsetX;
-        var newY = drawable.y + offsetY;
-        drawable.move(newX, newY);
-      }
+    for (var i = 0; i < MAORI.model.selected.length; i++) {
+      var drawable = MAORI.model.selected[i];
+      var newX = drawable.x + offsetX;
+      var newY = drawable.y + offsetY;
+      drawable.move(newX, newY);
     }
   } else {
     //moving display region

@@ -125,7 +125,6 @@ MAORI.general.init = function() {
   MAORI.general.drawingCanvas.onmousedown = MAORI.event.onDragDrawable;
   MAORI.general.drawingCanvas.onmouseup = MAORI.event.onDropDrawable;
   MAORI.general.drawingCanvas.onmousemove = MAORI.event.onMouseMove;
-  MAORI.general.drawingCanvas.onmouse
   window.onresize = MAORI.general.resize;
   /* Initialization code. */
   MAORI.draw.init();
